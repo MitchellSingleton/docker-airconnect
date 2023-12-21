@@ -1,19 +1,16 @@
 Branch Status
 <br>
-Master: ![Master](https://github.com/1activegeek/docker-airconnect/workflows/Multi-Arch%20Build/badge.svg?branch=master)
+Master: ![Master](https://github.com/MitchellSingleton/docker-airconnect/workflows/Multi-Arch%20Build/badge.svg?branch=master)
 <br>
-Dev: ![Development](https://github.com/1activegeek/docker-airconnect/workflows/Multi-Arch%20Build/badge.svg?branch=dev)
+Dev: ![Development](https://github.com/MitchellSingleton/docker-airconnect/workflows/Multi-Arch%20Build/badge.svg?branch=dev)
 <br>
 
 If you like what I've created, please consider contributing:
 <br>
-<a href="https://www.paypal.com/paypalme/shawnmix/3"><img src="https://img.shields.io/badge/PayPal-Make%20a%20Donation-grey?style=for-the-badge&logo=paypal&labelColor=000000"></a>
+<a href="https://www.paypal.com/paypalme"><img src="https://img.shields.io/badge/PayPal-Make%20a%20Donation-grey?style=for-the-badge&logo=paypal&labelColor=000000"></a>
 <br>
-<a href="https://ko-fi.com/shawnmix"><img src="https://img.shields.io/badge/Coffee-Buy%20me%20a%20Coffee-grey?style=for-the-badge&logo=buy-me-a-coffee&labelColor=000000"></a>
+<a href="https://ko-fi.com/"><img src="https://img.shields.io/badge/Coffee-Buy%20me%20a%20Coffee-grey?style=for-the-badge&logo=buy-me-a-coffee&labelColor=000000"></a>
 <br>
-### ARMv7 HAS BEEN DEPRECATED.
-#### Unfortunately the base I use, has deprecated ARMv7 support. My only alternative to support is to re-base the entire container which I don't currently have cycles for. 2 Options are now available if you are using ARMv7 platforms: one is to pin this container version to 1.0.8 until something changes (last supported ARMv7 release of my container) or check out https://hub.docker.com/repository/docker/sidevesh/airconnect which is a fork from [sidevesh](https://github.com/sidevesh) that is only intended for ARMv7 deployments. 
-
 <br>
 
 # docker-airconnect
@@ -21,10 +18,9 @@ AirConnect container for turning Chromecast into Airplay targets
 On DockerHub: https://hub.docker.com/r/1activegeek/airconnect  
 On GitHub: https://github.com/1activegeek/docker-airconnect  
 
-This is a containerized build of the fantastics program by [philippe44](https://github.com/philippe44) called AirConnect. It allows you to be able to use AirPlay to push audio to Chromecast and UPNP based devices. There are some advanced details and information that you should review on his [GitHub Project](https://github.com/philippe44/AirConnect). For the most part this container needs nothing more than to launch it using Host networking.
+This is a containerized build of the fantastic program by [philippe44](https://github.com/philippe44) called AirConnect. It allows you to be able to use AirPlay to push audio to Chromecast and UPNP based devices. There are some advanced details and information that you should review on his [GitHub Project](https://github.com/philippe44/AirConnect). For the most part this container needs nothing more than to launch it using Host networking.
 
 The main purpose for building this container over the others out there, is that this will always update to the latest version of the app as pulled from the original GitHub page. Currently there is another popular container that is not updated. This uses runtime scripting to ensure it will always pull the latest version of the binary before running - without intervention by me. It also uses the base image produced by the [LS.io team](https://github.com/linuxserver) to reduce footprint.
-
 
 Multi-arch support has been introduced, so there should be seamless use on AMD64, ARM64, and ARM devices.
 
@@ -50,6 +46,8 @@ To utilize this, please use the following environment variables when you run the
 If you do not wish to run both services and only need one, you can choose to kill the second service on startup so that it does not run. To do this, use the appropriate variable from above (`AIRCAST_VAR`/`AIRUPNP_VAR`) and set it equal to `kill`. This will remove the other service from the startup files and you should not see both services running if you view the docker container logs. 
 
 ### Runtime Commands
+
+The current usage can be seen in the docker output
 
 ```
 Usage: [options]
@@ -91,4 +89,4 @@ If you perform any realtime testing, it is suggested to completely restart the c
 
 <p>
 <p>
-<a href="https://ko-fi.com/shawnmix" target="_blank"><img src="https://user-images.githubusercontent.com/1685680/61808727-4925de00-ae3c-11e9-9d60-66bef358fd8e.png" alt="Buy Me A Coffee" style="height: 50px !important;width: auto !important;" ></a>
+<a href="https://ko-fi.com/" target="_blank"><img src="https://user-images.githubusercontent.com/1685680/61808727-4925de00-ae3c-11e9-9d60-66bef358fd8e.png" alt="Buy Me A Coffee" style="height: 50px !important;width: auto !important;" ></a>
