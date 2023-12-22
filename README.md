@@ -1,3 +1,21 @@
+changes committed:
+moved the script to download airconnect from image build to on container run
+added environment variables for path and version
+path allows specifying a persistant storage
+version allows specifying a specific version of airconnect
+added check to only download a file if it doesn't already exist in path
+added check to only extract if binary files if they don't already exist
+changed image from ubuntu cloud to alpine
+
+future:
+figure out how to build image
+test changes
+publish to git-hub
+publish to docker
+change from supervisor to s6
+
+
+
 Branch Status
 <br>
 Master: ![Master](https://github.com/MitchellSingleton/docker-airconnect/workflows/Multi-Arch%20Build/badge.svg?branch=master)
