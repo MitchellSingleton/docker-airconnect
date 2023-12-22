@@ -1,9 +1,12 @@
-FROM lsiobase/ubuntu:jammy
+# attempting to use alpine
+#FROM lsiobase/ubuntu:jammy
+FROM linuxserver/docker-baseimage-alpine:latest
 
 # Pulling TARGET_ARCH from build arguments and setting ENV variable
 ARG TARGETARCH
 ENV ARCH_VAR=$TARGETARCH
 
+# future switch to s6
 # Add Supervisor
 RUN apt-get update && apt-get install -y \
     supervisor \
