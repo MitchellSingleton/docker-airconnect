@@ -1,6 +1,7 @@
 # attempting to use alpine
 #FROM lsiobase/ubuntu:jammy
-FROM linuxserver/docker-baseimage-alpine:latest
+#FROM linuxserver/docker-baseimage-alpine:latest
+FROM lsiobase/alpine:latest
 
 # Pulling TARGET_ARCH from build arguments and setting ENV variable
 ARG TARGETARCH
