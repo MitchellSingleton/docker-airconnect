@@ -1,8 +1,9 @@
 # attempting to use alpine
-#FROM lsiobase/ubuntu:jammy
 #FROM linuxserver/docker-baseimage-alpine:latest
-FROM lsiobase/alpine:3.19
-
+FROM --platform=$BUILDPLATFORM lsiobase/alpine:3.19
+ARG TARGETPLATFORM
+ARG BUILDPLATFORM
+RUN echo "I am running on $BUILDPLATFORM, building for $TARGETPLATFORM" > /log
 # Pulling TARGET_ARCH from build arguments and setting ENV variable
 ARG TARGETARCH
 ENV ARCH_VAR=$TARGETARCH
