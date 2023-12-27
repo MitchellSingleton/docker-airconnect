@@ -11,7 +11,7 @@ ENV ARCH_VAR=$TARGETARCH
 # future switch to s6
 # alpine uses apk
 RUN apk add --update bash supervisor libssl3 libssl-dev unzip && rm  -rf /tmp/* /var/cache/apk/*
-ADD supervisord.conf /etc/
+# ADD supervisord.conf /etc/
 COPY root/ /
 ENTRYPOINT ["supervisord", "--nodaemon", "--configuration", "/etc/supervisord.conf"]
 
