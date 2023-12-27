@@ -9,13 +9,11 @@ ARG TARGETARCH
 ENV ARCH_VAR=$TARGETARCH
 
 # future switch to s6
-# Add Supervisor
-RUN apt-get update && apt-get install -y \
-    supervisor \
-    libssl3 \
-    libssl-dev \
-    unzip
+# alpine uses apk
+RUN apk add --update bash supervisor libssl3 libssl-dev unzip && rm  -rf /tmp/* /var/cache/apk/*
+ADD supervisord.conf /etc/
 COPY root/ /
+ENTRYPOINT ["supervisord", "--nodaemon", "--configuration", "/etc/supervisord.conf"]
 
 # Grab latest version of the app, extract binaries, cleanup tmp dir
 #RUN if [ "$ARCH_VAR" = "amd64" ]; then ARCH_VAR=linux-x86_64; elif [ "$ARCH_VAR" = "arm64" ]; then ARCH_VAR=linux-aarch64; elif [ "$ARCH_VAR" = "arm" ]; then ARCH_VAR=linux-arm; fi \
