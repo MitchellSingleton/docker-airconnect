@@ -104,6 +104,10 @@ if [ "$AIRUPNP_VAR" != "kill" ]; then
     echo "$(ls -la /bin/airupnp-$ARCH_VAR)"
 else
     echo "Skipping copy of ${var_path}/${var_version}/airupnp-${ARCH_VAR}"
+    if [ -f /bin/airupnp-${ARCH_VAR} ]; then
+        echo "Removing old executable /bin/airupnp-${ARCH_VAR}"
+        rm /bin/airupnp-${ARCH_VAR}
+    fi
 fi
 
 # move specified binaries into place unless skipped by kill variable
@@ -114,6 +118,10 @@ if [ "$AIRCAST_VAR" != "kill" ]; then
     echo "$(ls -la /bin/airupnp-$ARCH_VAR)"
 else
     echo "Skipping copy of ${var_path}/${var_version}/aircast-${ARCH_VAR}"
+    if [ -f /bin/aircast-${ARCH_VAR} ]; then
+        echo "Removing old executable /bin/aircast-${ARCH_VAR}"
+        rm /bin/airupnp-${ARCH_VAR}
+    fi
 fi
 
 echo "end of acquire_airconnect_up.sh"
