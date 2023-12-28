@@ -14,3 +14,36 @@ process_name = airupnp-linux-x86_64
 redirect_stderr=true
 command=/bin/aircast-linux-x86_64
 process_name = aircast-linux-x86_64
+
+
+
+
+# Get supervisor configuration lines
+UPNP=$(sed '4,7!d' /etc/supervisord.conf | grep -c '^#')
+CAST=$(sed '9,12!d' /etc/supervisord.conf | grep -c '^#')
+
+# Update supervisor configuration for airupnp based on environment variables
+# Check if VAR is empty, and assign arch / if not empty, run with command and assign arch / if kill, and hasn't run (=0) then comment out
+if [ -z "$AIRUPNP_VAR" ]; then
+  sed -i 's;command=/bin/airupnp-linux-x86_64 -l 1000:2000;command=/bin/airupnp-'"$ARCH_VAR"' -l 1000:2000;' /etc/supervisord.conf
+elif [ "$AIRUPNP_VAR" != "kill" ]; then
+  sed -i 's;command=/bin/airupnp-linux-x86_64 -l 1000:2000;command=/bin/airupnp-'"$ARCH_VAR $AIRUPNP_VAR"';' /etc/supervisord.conf
+elif [ "$AIRUPNP_VAR" = "kill" ] && [ "$UPNP" = 0 ]; then
+    for i in {4..7}
+    do
+      sed -i ''$i'{s/^/#/}' /etc/supervisord.conf
+    done
+fi
+
+# Update supervisor configuration for airupnp based on environment variables
+# Check if VAR is empty, and assign arch / if not empty, run with command and assign arch / if kill, and hasn't run (=0) then comment out
+if [ -z "$AIRCAST_VAR" ]; then
+  sed -i 's;command=/bin/aircast-linux-x86_64;command=/bin/aircast-'"$ARCH_VAR"';' /etc/supervisord.conf
+elif [ "$AIRCAST_VAR" != "kill" ]; then
+  sed -i 's;command=/bin/aircast-linux-x86_64;command=/bin/aircast-'"$ARCH_VAR $AIRCAST_VAR"';' /etc/supervisord.conf
+elif [ "$AIRCAST_VAR" = "kill" ] && [ "$CAST" = 0 ]; then
+    for i in {9..12}
+    do
+      sed -i ''$i'{s/^/#/}' /etc/supervisord.conf
+    done
+fi
