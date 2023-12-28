@@ -33,46 +33,46 @@ case $ARCH_VAR in
 esac
 
 # Adjusting process names in supervisord for Architecture differences
-[ "$ARCH_VAR" != "linux-x86_64" ] && sed -i 's;process_name = airupnp-linux-x86_64;process_name = airupnp-'"$ARCH_VAR"';' /etc/supervisord.conf
-[ "$ARCH_VAR" != "linux-x86_64" ] && sed -i 's;process_name = aircast-linux-x86_64;process_name = aircast-'"$ARCH_VAR"';' /etc/supervisord.conf
+#[ "$ARCH_VAR" != "linux-x86_64" ] && sed -i 's;process_name = airupnp-linux-x86_64;process_name = airupnp-'"$ARCH_VAR"';' /etc/supervisord.conf
+#[ "$ARCH_VAR" != "linux-x86_64" ] && sed -i 's;process_name = aircast-linux-x86_64;process_name = aircast-'"$ARCH_VAR"';' /etc/supervisord.conf
 
 #test if PATH is not zero length and not null, if so use default, if not use variable
-if [ -z "${PATH}" ]; then
-   path="/tmp"
+if [ -z "${PATH_VAR}" ]; then
+   var_path="/tmp"
 else
-   path="${PATH}"
+   var_path="${PATH_VAR}"
 fi
 
 #test if VERSION is zero length or not set, if so use default, if not use variable
-if [ -z "${VERSION}" ]; then
-   tag="latest"
+if [ -z "${VERSION_VAR}" ]; then
+   var_tag="latest"
 else
-   tag="tags/${VERSION}"
+   var_tag="tags/${VERSION_VAR}"
 fi
 
 # download the json and grep out the URL for the supplied tag
-url=$(curl -s https://api.github.com/repos/philippe44/AirConnect/releases/${tag} | grep browser_download_url | cut -d '"' -f 4)
+var_url=$(curl -s https://api.github.com/repos/philippe44/AirConnect/releases/${var_tag} | grep browser_download_url | cut -d '"' -f 4)
 # test if variable is zero length or not set (a bad version will result in a zero length url)
-if [ -z "${url}" ]; then
-   url=$(curl -s https://api.github.com/repos/philippe44/AirConnect/releases/latest | grep browser_download_url | cut -d '"' -f 4)
+if [ -z "${var_url}" ]; then
+   var_url=$(curl -s https://api.github.com/repos/philippe44/AirConnect/releases/latest | grep browser_download_url | cut -d '"' -f 4)
 fi
 
 #derive filename from URL
-filename=${url##*/}
+var_filename=${var_url##*/}
 
 #derive version from filename
-version=${filename%.*}
-version=${version#*-}
+var_version=${var_filename%.*}
+var_version=${var_version#*-}
 
 #future check if file already exists so that downloading can be skipped - only works if download location is persistant
-echo "testing if ${path}/${filename} exists"
-if [ ! -f /${path}/${filename} ]; then
+echo "testing if ${var_path}/${var_filename} exists"
+if [ ! -f /${var_path}/${var_filename} ]; then
     echo "file not found, downloading"
-    mkdir -p ${path}
+    mkdir -p ${var_path}
     # to allow saving download to path, change directory first.
     #future investigate curl version and --output-dir flag
-    cd ${path}
-    curl -L -o ${filename} ${url}
+    cd ${var_path}
+    curl -L -o ${var_filename} ${var_url}
     cd /
     #future add check for download success
 else
@@ -82,24 +82,24 @@ fi
 # test if desired binaries exist
 # if not, extract and copy files to path (to persist) and to the container
 # cleanup the extracted files
-if [ ! -f ${path}/${version}/airupnp-${ARCH_VAR} -o ! -f ${path}/${version}/aircast-${ARCH_VAR} ]; then
-    unzip ${filename} -d ${path}/${filename}/ \
-    && mkdir -p ${path}/${version} \
-    && mv ${path}/${filename}/airupnp-${ARCH_VAR} ${path}/${version}/airupnp-${ARCH_VAR} \
-    && mv ${path}/${filename}/aircast-${ARCH_VAR} ${path}/${version}/aircast-${ARCH_VAR}
+if [ ! -f ${var_path}/${var_version}/airupnp-${ARCH_VAR} -o ! -f ${var_path}/${var_version}/aircast-${ARCH_VAR} ]; then
+    unzip ${var_filename} -d ${var_path}/${var_filename}/ \
+    && mkdir -p ${var_path}/${var_version} \
+    && mv ${var_path}/${var_filename}/airupnp-${ARCH_VAR} ${var_path}/${var_version}/airupnp-${ARCH_VAR} \
+    && mv ${var_path}/${var_filename}/aircast-${ARCH_VAR} ${var_path}/${var_version}/aircast-${ARCH_VAR}
     # clean up extracted files
-    rm -r /${path}/${filename}/* \
-    && rmdir /${path}/${filename}
+    rm -r /${var_path}/${var_filename}/* \
+    && rmdir /${var_path}/${var_filename}
 fi
 
 # move specified binaries into place unless skipped by kill variable
 if [ "$AIRUPNP_VAR" != "kill" ]; then
-    cp ${path}/${version}/airupnp-${ARCH_VAR} /bin/airupnp-${ARCH_VAR} \
+    cp ${var_path}/${var_version}/airupnp-${ARCH_VAR} /bin/airupnp-${ARCH_VAR} \
     && chmod +x /bin/airupnp-$ARCH_VAR
 fi
 
 # move specified binaries into place unless skipped by kill variable
 if [ "$AIRCAST_VAR" != "kill" ]; then
-    cp ${path}/${version}/aircast-${ARCH_VAR} /bin/aircast-${ARCH_VAR} \
+    cp ${var_path}/${var_version}/aircast-${ARCH_VAR} /bin/aircast-${ARCH_VAR} \
     && chmod +x /bin/aircast-$ARCH_VAR
 fi
