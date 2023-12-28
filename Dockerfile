@@ -13,6 +13,7 @@ ENV ARCH_VAR=$TARGETARCH
 RUN apk add --update bash supervisor libssl3 openssl-dev unzip && rm  -rf /tmp/* /var/cache/apk/*
 # ADD supervisord.conf /etc/
 COPY root/ /
+ENTRYPOINT ["/init"]
 # ENTRYPOINT ["supervisord", "--nodaemon", "--configuration", "/etc/supervisord.conf"]
 
 # Grab latest version of the app, extract binaries, cleanup tmp dir
