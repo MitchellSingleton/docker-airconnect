@@ -32,7 +32,7 @@ esac
 
 if [ ! -f /bin/aircast-"${ARCH_VAR}" ]; then
     echo "/bin/airupnp-"${ARCH_VAR}" executable not found - setting service to down"
-    s6-svc -d aircast
+    s6-svc -d /etc/s6-overlay/s6-rc.d/aircast
 else
     echo "file exists"
     if [ -z "${AIRCAST_VAR}" ]; then
