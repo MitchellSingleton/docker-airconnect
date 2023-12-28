@@ -13,7 +13,7 @@ ENV ARCH_VAR=$TARGETARCH
 RUN apk add --update bash supervisor libssl3 openssl-dev unzip && rm  -rf /tmp/* /var/cache/apk/*
 # ADD supervisord.conf /etc/
 COPY root/ /
-ENTRYPOINT ["supervisord", "--nodaemon", "--configuration", "/etc/supervisord.conf"]
+# ENTRYPOINT ["supervisord", "--nodaemon", "--configuration", "/etc/supervisord.conf"]
 
 # Grab latest version of the app, extract binaries, cleanup tmp dir
 #RUN if [ "$ARCH_VAR" = "amd64" ]; then ARCH_VAR=linux-x86_64; elif [ "$ARCH_VAR" = "arm64" ]; then ARCH_VAR=linux-aarch64; elif [ "$ARCH_VAR" = "arm" ]; then ARCH_VAR=linux-arm; fi \
