@@ -102,9 +102,10 @@ if [ "$AIRUPNP_VAR" != "kill" ]; then
     cp ${var_path}/${var_version}/airupnp-${ARCH_VAR} /bin/airupnp-${ARCH_VAR} \
     && chmod +x /bin/airupnp-$ARCH_VAR
     echo "$(ls -la /bin/airupnp-$ARCH_VAR)"
-    touch /etc/s6-overlay/s6-rc.d/user/contents.d/airupnp
 else
     echo "Skipping copy of ${var_path}/${var_version}/airupnp-${ARCH_VAR}"
+    echo "/bin/airupnp-"${ARCH_VAR}" executable not found - setting service to down"
+    s6-svc -d airupnp
     if [ -f /bin/airupnp-${ARCH_VAR} ]; then
         echo "Removing old executable /bin/airupnp-${ARCH_VAR}"
         rm /bin/airupnp-${ARCH_VAR}
@@ -120,6 +121,8 @@ if [ "$AIRCAST_VAR" != "kill" ]; then
     touch /etc/s6-overlay/s6-rc.d/user/contents.d/aircast
 else
     echo "Skipping copy of ${var_path}/${var_version}/aircast-${ARCH_VAR}"
+    echo "/bin/airupnp-"${ARCH_VAR}" executable not found - setting service to down"
+    s6-svc -d aircast
     if [ -f /bin/aircast-${ARCH_VAR} ]; then
         echo "Removing old executable /bin/aircast-${ARCH_VAR}"
         rm /bin/airupnp-${ARCH_VAR}
