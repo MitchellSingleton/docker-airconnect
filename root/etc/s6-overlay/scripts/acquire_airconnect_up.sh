@@ -88,8 +88,8 @@ echo "testing if either ${var_path}/${var_version}/airupnp-${ARCH_VAR} or ${var_
 if [ ! -f ${var_path}/${var_version}/airupnp-${ARCH_VAR} -o ! -f ${var_path}/${var_version}/aircast-${ARCH_VAR} ]; then
     unzip ${var_path}/${var_filename} airupnp-${ARCH_VAR} aircast-${ARCH_VAR} *.dll -d ${var_path}/${var_filename%.*}/ \
     && mkdir -p ${var_path}/${var_version} \
-    && mv ${var_path}/${var_filename%.*}/airupnp-${ARCH_VAR} ${var_path}/${var_version}/airupnp-${ARCH_VAR} \
-    && mv ${var_path}/${var_filename%.*}/aircast-${ARCH_VAR} ${var_path}/${var_version}/aircast-${ARCH_VAR}
+    && mv ${var_path}/${var_filename%.*}/* ${var_path}/${var_version}/ \
+    && mv ${var_path}/${var_filename%.*}/*.dll ${var_path}/${var_version}/
     echo "$(ls -la ${var_path}/${var_version}/)"
     # clean up extracted files
     echo "Removing ${var_path}/${var_filename%.*}/"
@@ -105,7 +105,7 @@ if [ -f /bin/aircast-${ARCH_VAR} ]; then
     rm /bin/aircast-${ARCH_VAR}
 fi
 
-# move specified binaries into place unless skipped by kill variable
+# copy specified binaries into place unless skipped by kill variable
 if [ "$AIRUPNP_VAR" != "kill" ]; then
     echo "copying ${var_path}/${var_version}/airupnp-${ARCH_VAR} to /bin/airupnp-${ARCH_VAR}"
     cp ${var_path}/${var_version}/airupnp-${ARCH_VAR} /bin/airupnp-${ARCH_VAR} \
@@ -117,7 +117,7 @@ else
     s6-svc -d /etc/s6-overlay/s6-rc.d/airupnp
 fi
 
-# move specified binaries into place unless skipped by kill variable
+# copy specified binaries into place unless skipped by kill variable
 if [ "$AIRCAST_VAR" != "kill" ]; then
     echo "copying ${var_path}/${var_version}/aircast-${ARCH_VAR} to /bin/aircast-${ARCH_VAR}"
     cp ${var_path}/${var_version}/aircast-${ARCH_VAR} /bin/aircast-${ARCH_VAR} \
@@ -129,4 +129,9 @@ else
     s6-svc -d /etc/s6-overlay/s6-rc.d/aircast
 fi
 
+# copy specified binaries into place unless skipped by kill variable
+echo "copying ${var_path}/${var_version}/*.dll to /bin/airupnp-${ARCH_VAR}"
+cp ${var_path}/${var_version}/*.dll /bin/
+echo "$(ls -la /bin/*.dll)"
+    
 echo "end of acquire_airconnect_up.sh"
