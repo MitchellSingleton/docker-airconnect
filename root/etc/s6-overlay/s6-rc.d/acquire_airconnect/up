@@ -1,1 +1,2 @@
-/etc/s6-overlay/scripts/acquire_airconnect_up
+foreground { echo "Calling acquire_airconnect_up.sh..." }
+/etc/s6-overlay/scripts/acquire_airconnect_up.sh
