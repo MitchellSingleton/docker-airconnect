@@ -86,7 +86,7 @@ fi
 # cleanup the extracted files
 echo "testing if either ${var_path}/${var_version}/airupnp-${ARCH_VAR} or ${var_path}/${var_version}/aircast-${ARCH_VAR} does not exists"
 if [ ! -f ${var_path}/${var_version}/airupnp-${ARCH_VAR} -o ! -f ${var_path}/${var_version}/aircast-${ARCH_VAR} ]; then
-    unzip ${var_path}/${var_filename} -d ${var_path}/${var_filename%.*}/ \
+    unzip ${var_path}/${var_filename} airupnp-${ARCH_VAR} aircast-${ARCH_VAR} -d ${var_path}/${var_filename%.*}/ \
     && mkdir -p ${var_path}/${var_version} \
     && mv ${var_path}/${var_filename%.*}/airupnp-${ARCH_VAR} ${var_path}/${var_version}/airupnp-${ARCH_VAR} \
     && mv ${var_path}/${var_filename%.*}/aircast-${ARCH_VAR} ${var_path}/${var_version}/aircast-${ARCH_VAR}
@@ -102,7 +102,7 @@ if [ "$AIRUPNP_VAR" != "kill" ]; then
     cp ${var_path}/${var_version}/airupnp-${ARCH_VAR} /bin/airupnp-${ARCH_VAR} \
     && chmod +x /bin/airupnp-$ARCH_VAR
     echo "$(ls -la /bin/airupnp-$ARCH_VAR)"
-    touch root/etc/s6-overlay/s6-rc.d/user/contents.d/airupnp
+    touch /etc/s6-overlay/s6-rc.d/user/contents.d/airupnp
 else
     echo "Skipping copy of ${var_path}/${var_version}/airupnp-${ARCH_VAR}"
     if [ -f /bin/airupnp-${ARCH_VAR} ]; then
@@ -117,7 +117,7 @@ if [ "$AIRCAST_VAR" != "kill" ]; then
     cp ${var_path}/${var_version}/aircast-${ARCH_VAR} /bin/aircast-${ARCH_VAR} \
     && chmod +x /bin/aircast-$ARCH_VAR
     echo "$(ls -la /bin/airupnp-$ARCH_VAR)"
-    touch root/etc/s6-overlay/s6-rc.d/user/contents.d/aircast
+    touch /etc/s6-overlay/s6-rc.d/user/contents.d/aircast
 else
     echo "Skipping copy of ${var_path}/${var_version}/aircast-${ARCH_VAR}"
     if [ -f /bin/aircast-${ARCH_VAR} ]; then
