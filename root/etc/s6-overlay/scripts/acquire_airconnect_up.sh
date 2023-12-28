@@ -1,5 +1,7 @@
 #!/usr/bin/with-contenv bash
 
+echo "Start of acquire_airconnect_up.sh"
+
 # This one shot script is a dependacy and will run first.
 # It will check if the request version has been downloaded and if not download
 # It will check if the downloaded file has been unzipped and if not unzip
@@ -82,23 +84,36 @@ fi
 # test if desired binaries exist
 # if not, extract and copy files to path (to persist) and to the container
 # cleanup the extracted files
+echo "testing if either ${var_path}/${var_version}/airupnp-${ARCH_VAR} or ${var_path}/${var_version}/aircast-${ARCH_VAR} does not exists"
 if [ ! -f ${var_path}/${var_version}/airupnp-${ARCH_VAR} -o ! -f ${var_path}/${var_version}/aircast-${ARCH_VAR} ]; then
     unzip ${var_path}/${var_filename} -d ${var_path}/${var_filename%.*}/ \
     && mkdir -p ${var_path}/${var_version} \
     && mv ${var_path}/${var_filename%.*}/airupnp-${ARCH_VAR} ${var_path}/${var_version}/airupnp-${ARCH_VAR} \
     && mv ${var_path}/${var_filename%.*}/aircast-${ARCH_VAR} ${var_path}/${var_version}/aircast-${ARCH_VAR}
+    echo "$(ls -la ${var_path}/${var_version}/)"
     # clean up extracted files
-    rm -r /${var_path}/${var_filename%.*}/
+    echo "Removing ${var_path}/${var_filename%.*}/"
+    rm -r ${var_path}/${var_filename%.*}/
 fi
 
 # move specified binaries into place unless skipped by kill variable
 if [ "$AIRUPNP_VAR" != "kill" ]; then
+    echo "copying ${var_path}/${var_version}/airupnp-${ARCH_VAR} to /bin/airupnp-${ARCH_VAR}"
     cp ${var_path}/${var_version}/airupnp-${ARCH_VAR} /bin/airupnp-${ARCH_VAR} \
     && chmod +x /bin/airupnp-$ARCH_VAR
+    echo "$(ls -la /bin/airupnp-$ARCH_VAR)"
+else
+    echo "Skipping copy of ${var_path}/${var_version}/airupnp-${ARCH_VAR}"
 fi
 
 # move specified binaries into place unless skipped by kill variable
 if [ "$AIRCAST_VAR" != "kill" ]; then
+    echo "copying ${var_path}/${var_version}/aircast-${ARCH_VAR} to /bin/aircast-${ARCH_VAR}"
     cp ${var_path}/${var_version}/aircast-${ARCH_VAR} /bin/aircast-${ARCH_VAR} \
     && chmod +x /bin/aircast-$ARCH_VAR
+    echo "$(ls -la /bin/airupnp-$ARCH_VAR)"
+else
+    echo "Skipping copy of ${var_path}/${var_version}/aircast-${ARCH_VAR}"
 fi
+
+echo "end of acquire_airconnect_up.sh"
