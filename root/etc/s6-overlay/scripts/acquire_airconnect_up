@@ -1,4 +1,11 @@
 #!/bin/bash -e
+
+# This one shot script is a dependacy and will run first.
+# It will check if the request version has been downloaded and if not download
+# It will check if the downloaded file has been unzipped and if not unzip
+# It will check if the desired binaries are copied into place with the correct permissions
+
+
 # Grab latest version of the app, extract binaries, cleanup tmp dir
 #if [ "$ARCH_VAR" = "amd64" ]; then ARCH_VAR=linux-x86_64; elif [ "$ARCH_VAR" = "arm64" ]; then ARCH_VAR=linux-aarch64; elif [ "$ARCH_VAR" = "arm" ]; then ARCH_VAR=linux-arm; fi \
 #    && curl -s https://api.github.com/repos/philippe44/AirConnect/releases/latest | grep browser_download_url | cut -d '"' -f 4 | xargs curl -L -o airconnect.zip \
@@ -42,33 +49,35 @@ esac
 [ "$ARCH_VAR" != "linux-x86_64" ] && sed -i 's;process_name = airupnp-linux-x86_64;process_name = airupnp-'"$ARCH_VAR"';' /etc/supervisord.conf
 [ "$ARCH_VAR" != "linux-x86_64" ] && sed -i 's;process_name = aircast-linux-x86_64;process_name = aircast-'"$ARCH_VAR"';' /etc/supervisord.conf
 
+#test if PATH is not zero length and not null, if so use default, if not use variable
+if [ -z "${PATH}" ]; then
+   path="/tmp"
+else
+   path="${PATH}"
+fi
 
 #test if VERSION is zero length or not set, if so use default, if not use variable
 if [ -z "${VERSION}" ]; then
-   tag=latest
+   tag="latest"
 else
-   tag=tags/${VERSION}
+   tag="tags/${VERSION}"
 fi
 
+# download the json and grep out the URL for the supplied tag
 url=$(curl -s https://api.github.com/repos/philippe44/AirConnect/releases/${tag} | grep browser_download_url | cut -d '"' -f 4)
-# test if variable is zero length or not set
+# test if variable is zero length or not set (a bad version will result in a zero length url)
 if [ -z "${url}" ]; then
    url=$(curl -s https://api.github.com/repos/philippe44/AirConnect/releases/latest | grep browser_download_url | cut -d '"' -f 4)
 fi
 
+#derive filename from URL
 filename=${url##*/}
+
+#derive version from filename
 version=${filename%.*}
 version=${version#*-}
 
-
-#test if PATH is not zero length and not null, if so use default, if not use variable
-if [ -z "${PATH}" ]; then
-   path=/tmp
-else
-   path=${PATH}
-fi
-
-#future check if file already exists to skip downloading again - allows specifying a persistant location
+#future check if file already exists so that downloading can be skipped - only works if download location is persistant
 echo "testing if ${path}/${filename} exists"
 if [ ! -f /${path}/${filename} ]; then
     echo "file not found, downloading"
@@ -90,42 +99,20 @@ if [ ! -f ${path}/${version}/airupnp-${ARCH_VAR} -o ! -f ${path}/${version}/airc
     unzip ${filename} -d ${path}/${filename}/ \
     && mkdir -p ${path}/${version} \
     && mv ${path}/${filename}/airupnp-${ARCH_VAR} ${path}/${version}/airupnp-${ARCH_VAR} \
-    && mv ${path}/${filename}/aircast-${ARCH_VAR} ${path}/${version}/aircast-${ARCH_VAR} \
-    && mv ${path}/${filename}/airupnp-${ARCH_VAR} /bin/airupnp-${ARCH_VAR} \
-    && mv ${path}/${filename}/aircast-${ARCH_VAR} /bin/aircast-${ARCH_VAR} \
-    && chmod +x /bin/airupnp-$ARCH_VAR \
-    && chmod +x /bin/aircast-$ARCH_VAR
+    && mv ${path}/${filename}/aircast-${ARCH_VAR} ${path}/${version}/aircast-${ARCH_VAR}
     # clean up extracted files
     rm -r /${path}/${filename}/* \
     && rmdir /${path}/${filename}
 fi
 
-# Get supervisor configuration lines
-UPNP=$(sed '4,7!d' /etc/supervisord.conf | grep -c '^#')
-CAST=$(sed '9,12!d' /etc/supervisord.conf | grep -c '^#')
-
-# Update supervisor configuration for airupnp based on environment variables
-# Check if VAR is empty, and assign arch / if not empty, run with command and assign arch / if kill, and hasn't run (=0) then comment out
-if [ -z "$AIRUPNP_VAR" ]; then
-  sed -i 's;command=/bin/airupnp-linux-x86_64 -l 1000:2000;command=/bin/airupnp-'"$ARCH_VAR"' -l 1000:2000;' /etc/supervisord.conf
-elif [ "$AIRUPNP_VAR" != "kill" ]; then
-  sed -i 's;command=/bin/airupnp-linux-x86_64 -l 1000:2000;command=/bin/airupnp-'"$ARCH_VAR $AIRUPNP_VAR"';' /etc/supervisord.conf
-elif [ "$AIRUPNP_VAR" = "kill" ] && [ "$UPNP" = 0 ]; then
-    for i in {4..7}
-    do
-      sed -i ''$i'{s/^/#/}' /etc/supervisord.conf
-    done
+# move specified binaries into place unless skipped by kill variable
+if [ "$AIRUPNP_VAR" != "kill" ]; then
+    cp ${path}/${version}/airupnp-${ARCH_VAR} /bin/airupnp-${ARCH_VAR} \
+    && chmod +x /bin/airupnp-$ARCH_VAR
 fi
 
-# Update supervisor configuration for airupnp based on environment variables
-# Check if VAR is empty, and assign arch / if not empty, run with command and assign arch / if kill, and hasn't run (=0) then comment out
-if [ -z "$AIRCAST_VAR" ]; then
-  sed -i 's;command=/bin/aircast-linux-x86_64;command=/bin/aircast-'"$ARCH_VAR"';' /etc/supervisord.conf
-elif [ "$AIRCAST_VAR" != "kill" ]; then
-  sed -i 's;command=/bin/aircast-linux-x86_64;command=/bin/aircast-'"$ARCH_VAR $AIRCAST_VAR"';' /etc/supervisord.conf
-elif [ "$AIRCAST_VAR" = "kill" ] && [ "$CAST" = 0 ]; then
-    for i in {9..12}
-    do
-      sed -i ''$i'{s/^/#/}' /etc/supervisord.conf
-    done
+# move specified binaries into place unless skipped by kill variable
+if [ "$AIRCAST_VAR" != "kill" ]; then
+    cp ${path}/${version}/aircast-${ARCH_VAR} /bin/aircast-${ARCH_VAR} \
+    && chmod +x /bin/aircast-$ARCH_VAR
 fi
