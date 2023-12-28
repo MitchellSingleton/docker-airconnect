@@ -2,11 +2,16 @@
 
 echo "Starting airupnp run"
 
-
-if [ -z "${AIRUPNP_VAR}" ]; then
-   /bin/airupnp-"${ARCH_VAR}" -l 1000:2000
+if [ ! -f /bin/airupnp-"${ARCH_VAR}" ]; then
+    echo "executable not found - exiting"
+    exit 1
 else
-   /bin/airupnp-"${ARCH_VAR}" "${AIRUPNP_VAR}"
+    echo "file exists"
+    if [ -z "${AIRUPNP_VAR}" ]; then
+       /bin/airupnp-"${ARCH_VAR}" -l 1000:2000
+    else
+       /bin/airupnp-"${ARCH_VAR}" "${AIRUPNP_VAR}"
+    fi
 fi
 
-
+echo "Exiting airupnp run"
