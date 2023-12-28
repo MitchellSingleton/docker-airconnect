@@ -83,13 +83,12 @@ fi
 # if not, extract and copy files to path (to persist) and to the container
 # cleanup the extracted files
 if [ ! -f ${var_path}/${var_version}/airupnp-${ARCH_VAR} -o ! -f ${var_path}/${var_version}/aircast-${ARCH_VAR} ]; then
-    unzip ${var_filename} -d ${var_path}/${var_filename}/ \
+    unzip ${var_path}/${var_filename} -d ${var_path}/${var_filename}/ \
     && mkdir -p ${var_path}/${var_version} \
     && mv ${var_path}/${var_filename}/airupnp-${ARCH_VAR} ${var_path}/${var_version}/airupnp-${ARCH_VAR} \
     && mv ${var_path}/${var_filename}/aircast-${ARCH_VAR} ${var_path}/${var_version}/aircast-${ARCH_VAR}
     # clean up extracted files
-    rm -r /${var_path}/${var_filename}/* \
-    && rmdir /${var_path}/${var_filename}
+    rm -r /${var_path}/${var_filename}/
 fi
 
 # move specified binaries into place unless skipped by kill variable
