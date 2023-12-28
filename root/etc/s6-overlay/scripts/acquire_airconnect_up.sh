@@ -1,22 +1,9 @@
-#!/bin/bash -e
+#!/usr/bin/with-contenv bash
 
 # This one shot script is a dependacy and will run first.
 # It will check if the request version has been downloaded and if not download
 # It will check if the downloaded file has been unzipped and if not unzip
 # It will check if the desired binaries are copied into place with the correct permissions
-
-
-# Grab latest version of the app, extract binaries, cleanup tmp dir
-#if [ "$ARCH_VAR" = "amd64" ]; then ARCH_VAR=linux-x86_64; elif [ "$ARCH_VAR" = "arm64" ]; then ARCH_VAR=linux-aarch64; elif [ "$ARCH_VAR" = "arm" ]; then ARCH_VAR=linux-arm; fi \
-#    && curl -s https://api.github.com/repos/philippe44/AirConnect/releases/latest | grep browser_download_url | cut -d '"' -f 4 | xargs curl -L -o airconnect.zip \
-#    && unzip airconnect.zip -d /tmp/ \
-#    && mv /tmp/airupnp-$ARCH_VAR /bin/airupnp-$ARCH_VAR \
-#    && mv /tmp/aircast-$ARCH_VAR /bin/aircast-$ARCH_VAR \
-#    && chmod +x /bin/airupnp-$ARCH_VAR \
-#    && chmod +x /bin/aircast-$ARCH_VAR \
-#    && rm -r /tmp/*
-
-#!/usr/bin/with-contenv bash
 
 if [ "$ARCH_VAR" == "amd64" ]; then
   ARCH_VAR=linux-x86_64
