@@ -13,5 +13,5 @@ ENV ARCH_VAR=$TARGETARCH
 RUN apk add --update bash libssl3 openssl-dev unzip && rm  -rf /tmp/* /var/cache/apk/*
 # ADD supervisord.conf /etc/
 COPY root/ /
-RUN chmod 0755 /etc/s6-overlay/scripts/acquire_airconnect.sh
+RUN chmod 0755 /etc/s6-overlay/scripts/acquire_airconnect_up.sh
 ENTRYPOINT ["/init"]
