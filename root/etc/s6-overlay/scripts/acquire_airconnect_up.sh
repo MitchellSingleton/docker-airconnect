@@ -96,6 +96,15 @@ if [ ! -f ${var_path}/${var_version}/airupnp-${ARCH_VAR} -o ! -f ${var_path}/${v
     rm -r ${var_path}/${var_filename%.*}/
 fi
 
+if [ -f /bin/airupnp-${ARCH_VAR} ]; then
+    echo "Removing old executable /bin/airupnp-${ARCH_VAR}"
+    rm /bin/airupnp-${ARCH_VAR}
+fi
+if [ -f /bin/aircast-${ARCH_VAR} ]; then
+    echo "Removing old executable /bin/aircast-${ARCH_VAR}"
+    rm /bin/aircast-${ARCH_VAR}
+fi
+
 # move specified binaries into place unless skipped by kill variable
 if [ "$AIRUPNP_VAR" != "kill" ]; then
     echo "copying ${var_path}/${var_version}/airupnp-${ARCH_VAR} to /bin/airupnp-${ARCH_VAR}"
@@ -104,12 +113,8 @@ if [ "$AIRUPNP_VAR" != "kill" ]; then
     echo "$(ls -la /bin/airupnp-$ARCH_VAR)"
 else
     echo "Skipping copy of ${var_path}/${var_version}/airupnp-${ARCH_VAR}"
-    echo "/bin/airupnp-"${ARCH_VAR}" executable not found - setting service to down"
+    echo "setting airupnp service to down"
     s6-svc -d /etc/s6-overlay/s6-rc.d/airupnp
-    if [ -f /bin/airupnp-${ARCH_VAR} ]; then
-        echo "Removing old executable /bin/airupnp-${ARCH_VAR}"
-        rm /bin/airupnp-${ARCH_VAR}
-    fi
 fi
 
 # move specified binaries into place unless skipped by kill variable
@@ -117,15 +122,11 @@ if [ "$AIRCAST_VAR" != "kill" ]; then
     echo "copying ${var_path}/${var_version}/aircast-${ARCH_VAR} to /bin/aircast-${ARCH_VAR}"
     cp ${var_path}/${var_version}/aircast-${ARCH_VAR} /bin/aircast-${ARCH_VAR} \
     && chmod +x /bin/aircast-$ARCH_VAR
-    echo "$(ls -la /bin/airupnp-$ARCH_VAR)"
+    echo "$(ls -la /bin/aircast-$ARCH_VAR)"
 else
     echo "Skipping copy of ${var_path}/${var_version}/aircast-${ARCH_VAR}"
-    echo "/bin/airupnp-"${ARCH_VAR}" executable not found - setting service to down"
+    echo "setting aircast service to down"
     s6-svc -d /etc/s6-overlay/s6-rc.d/aircast
-    if [ -f /bin/aircast-${ARCH_VAR} ]; then
-        echo "Removing old executable /bin/aircast-${ARCH_VAR}"
-        rm /bin/airupnp-${ARCH_VAR}
-    fi
 fi
 
 echo "end of acquire_airconnect_up.sh"
