@@ -2,5 +2,11 @@
 
 echo "Starting airupnp run"
 
-/bin/airupnp-"${ARCH_VAR}" -l 1000:2000
-/bin/airupnp-"${ARCH_VAR}" "${AIRUPNP_VAR}"
+
+if [ -z "${AIRUPNP_VAR}" ]; then
+   /bin/airupnp-"${ARCH_VAR}" -l 1000:2000
+else
+   /bin/airupnp-"${ARCH_VAR}" "${AIRUPNP_VAR}"
+fi
+
+
