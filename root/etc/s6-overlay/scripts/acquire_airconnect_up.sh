@@ -86,7 +86,7 @@ fi
 # cleanup the extracted files
 echo "testing if either ${var_path}/${var_version}/airupnp-${ARCH_VAR} or ${var_path}/${var_version}/aircast-${ARCH_VAR} does not exists"
 if [ ! -f ${var_path}/${var_version}/airupnp-${ARCH_VAR} -o ! -f ${var_path}/${var_version}/aircast-${ARCH_VAR} ]; then
-    unzip ${var_path}/${var_filename} airupnp-${ARCH_VAR} aircast-${ARCH_VAR} -d ${var_path}/${var_filename%.*}/ \
+    unzip ${var_path}/${var_filename} airupnp-${ARCH_VAR} aircast-${ARCH_VAR} *.dll -d ${var_path}/${var_filename%.*}/ \
     && mkdir -p ${var_path}/${var_version} \
     && mv ${var_path}/${var_filename%.*}/airupnp-${ARCH_VAR} ${var_path}/${var_version}/airupnp-${ARCH_VAR} \
     && mv ${var_path}/${var_filename%.*}/aircast-${ARCH_VAR} ${var_path}/${var_version}/aircast-${ARCH_VAR}
