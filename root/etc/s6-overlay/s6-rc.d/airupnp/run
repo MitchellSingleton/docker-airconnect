@@ -33,13 +33,12 @@ esac
 if [ ! -f /bin/airupnp-"${ARCH_VAR}" ]; then
     echo "/bin/airupnp-"${ARCH_VAR}" executable not found - setting service to down"
     s6-svc -d /etc/s6-overlay/s6-rc.d/airupnp
-else
-    echo "file exists"
+else    
+    echo "executable /bin/airupnp-"${ARCH_VAR}" exists"
     if [ -z "${AIRUPNP_VAR}" ]; then
-       /bin/airupnp-"${ARCH_VAR}" -l 1000:2000
-    else
-       /bin/airupnp-"${ARCH_VAR}" "${AIRUPNP_VAR}"
+       AIRUPNP_VAR="-l 1000:2000 -z"
     fi
+    /bin/airupnp-"${ARCH_VAR}" "${AIRUPNP_VAR}"
 fi
 
 echo "Exiting airupnp run"
