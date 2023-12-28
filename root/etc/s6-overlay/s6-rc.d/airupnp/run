@@ -3,8 +3,8 @@
 echo "Starting airupnp run"
 
 if [ ! -f /bin/airupnp-"${ARCH_VAR}" ]; then
-    echo "executable not found - exiting"
-    exit 1
+    echo "/bin/airupnp-"${ARCH_VAR}" executable not found - setting service to down"
+    s6-svc -d airupnp
 else
     echo "file exists"
     if [ -z "${AIRUPNP_VAR}" ]; then
