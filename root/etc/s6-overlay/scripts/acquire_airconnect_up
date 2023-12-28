@@ -100,9 +100,11 @@ if [ ! -f ${path}/${version}/airupnp-${ARCH_VAR} -o ! -f ${path}/${version}/airc
     && rmdir /${path}/${filename}
 fi
 
+# Get supervisor configuration lines
 UPNP=$(sed '4,7!d' /etc/supervisord.conf | grep -c '^#')
 CAST=$(sed '9,12!d' /etc/supervisord.conf | grep -c '^#')
 
+# Update supervisor configuration for airupnp based on environment variables
 # Check if VAR is empty, and assign arch / if not empty, run with command and assign arch / if kill, and hasn't run (=0) then comment out
 if [ -z "$AIRUPNP_VAR" ]; then
   sed -i 's;command=/bin/airupnp-linux-x86_64 -l 1000:2000;command=/bin/airupnp-'"$ARCH_VAR"' -l 1000:2000;' /etc/supervisord.conf
@@ -115,6 +117,7 @@ elif [ "$AIRUPNP_VAR" = "kill" ] && [ "$UPNP" = 0 ]; then
     done
 fi
 
+# Update supervisor configuration for airupnp based on environment variables
 # Check if VAR is empty, and assign arch / if not empty, run with command and assign arch / if kill, and hasn't run (=0) then comment out
 if [ -z "$AIRCAST_VAR" ]; then
   sed -i 's;command=/bin/aircast-linux-x86_64;command=/bin/aircast-'"$ARCH_VAR"';' /etc/supervisord.conf
