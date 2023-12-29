@@ -114,10 +114,12 @@ if [ "$AIRUPNP_VAR" != "kill" ]; then
     cp ${var_path}/${var_version}/airupnp-${ARCH_VAR} /bin/airupnp-${ARCH_VAR} \
     && chmod +x /bin/airupnp-$ARCH_VAR
     echo "$(ls -la /bin/airupnp-$ARCH_VAR)"
+    echo "setting airupnp service to up"
+    s6-svc -u /etc/s6-overlay/s6-rc.d/airupnp
 else
     echo "Skipping copy of ${var_path}/${var_version}/airupnp-${ARCH_VAR}"
-    echo "setting airupnp service to down"
-    s6-svc -d /etc/s6-overlay/s6-rc.d/airupnp
+    #echo "setting airupnp service to down"
+    #s6-svc -d /etc/s6-overlay/s6-rc.d/airupnp
 fi
 
 # copy specified binaries into place unless skipped by kill variable
@@ -126,15 +128,17 @@ if [ "$AIRCAST_VAR" != "kill" ]; then
     cp ${var_path}/${var_version}/aircast-${ARCH_VAR} /bin/aircast-${ARCH_VAR} \
     && chmod +x /bin/aircast-$ARCH_VAR
     echo "$(ls -la /bin/aircast-$ARCH_VAR)"
+    echo "setting aircast service to up"
+    s6-svc -u /etc/s6-overlay/s6-rc.d/aircast
 else
     echo "Skipping copy of ${var_path}/${var_version}/aircast-${ARCH_VAR}"
-    echo "setting aircast service to down"
-    s6-svc -d /etc/s6-overlay/s6-rc.d/aircast
+    #echo "setting aircast service to down"
+    #s6-svc -d /etc/s6-overlay/s6-rc.d/aircast
 fi
 
 # copy specified binaries into place unless skipped by kill variable
-echo "copying ${var_path}/${var_version}/*.dll to /bin/"
-cp ${var_path}/${var_version}/*.dll /bin/
-echo "$(ls -la /bin/*.dll)"
+#echo "copying ${var_path}/${var_version}/*.dll to /bin/"
+#cp ${var_path}/${var_version}/*.dll /bin/
+#echo "$(ls -la /bin/*.dll)"
     
 echo "end of acquire_airconnect_up.sh"
