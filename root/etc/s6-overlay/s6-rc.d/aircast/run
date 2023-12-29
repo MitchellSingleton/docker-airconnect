@@ -1,6 +1,6 @@
 #!/usr/bin/with-contenv bash
-
 echo "Starting aircast run"
+if [ "${AIRCAST_VAR}" != "kill" ]; then
 
 if [ "$ARCH_VAR" == "amd64" ]; then
   ARCH_VAR=linux-x86_64
@@ -42,5 +42,5 @@ if [ -f /bin/aircast-${ARCH_VAR} ]; then
        /bin/aircast-${ARCH_VAR} ${AIRCAST_VAR}
     fi
 fi
-
+fi
 echo "Exiting aircast run"
