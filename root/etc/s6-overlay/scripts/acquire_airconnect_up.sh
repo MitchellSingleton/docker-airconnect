@@ -125,15 +125,6 @@ cd /
 #    rm -r ${var_path}/${var_filename%.*}/
 #fi
 
-if [ -f /bin/airupnp-${ARCH_VAR} ]; then
-    echo "Removing old executable /bin/airupnp-${ARCH_VAR}"
-    rm /bin/airupnp-${ARCH_VAR}
-fi
-if [ -f /bin/aircast-${ARCH_VAR} ]; then
-    echo "Removing old executable /bin/aircast-${ARCH_VAR}"
-    rm /bin/aircast-${ARCH_VAR}
-fi
-
 # copy specified binaries into place unless skipped by kill variable
 if [ "$AIRUPNP_VAR" != "kill" ]; then
     echo "copying ${var_path}/${var_version}/airupnp-${ARCH_VAR} to /bin/airupnp-${ARCH_VAR}"
@@ -141,7 +132,8 @@ if [ "$AIRUPNP_VAR" != "kill" ]; then
     && chmod +x /bin/airupnp-$ARCH_VAR
     echo "$(ls -la /bin/airupnp-$ARCH_VAR)"
 else
-    echo "Skipping copy of ${var_path}/${var_version}/airupnp-${ARCH_VAR}"
+    echo "Per variable set to \"kill\", not enabling airupnp service and removing any previous airupnp executables from /bin"
+    rm /bin/airupnp-*
 fi
 
 # copy specified binaries into place unless skipped by kill variable
@@ -151,7 +143,8 @@ if [ "$AIRCAST_VAR" != "kill" ]; then
     && chmod +x /bin/aircast-$ARCH_VAR
     echo "$(ls -la /bin/aircast-$ARCH_VAR)"
 else
-    echo "Skipping copy of ${var_path}/${var_version}/aircast-${ARCH_VAR}"
+    echo "Per variable set to \"kill\", not enabling aircast service and removing any previous aircast executables from /bin"
+    rm /bin/aircast-*
 fi
     
 echo "end of acquire_airconnect_up.sh"
