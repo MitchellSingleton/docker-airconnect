@@ -32,18 +32,14 @@ esac
 echo "ARCH_VAR=${ARCH_VAR}"
 ARCH_VAR="${ARCH_VAR}-static"
 
-
-if [ ! -f /bin/aircast-"${ARCH_VAR}" ]; then
-    echo "/bin/aircast-"${ARCH_VAR}" executable not found - setting service to down"
-    s6-svc -d /var/run/s6/services/aircast
-else
-    echo "file exists"
+if [ -f /bin/aircast-${ARCH_VAR} ]; then
+    echo "executable /bin/aircast-"${ARCH_VAR}" exists"
     if [ -z "${AIRCAST_VAR}" ]; then
        echo "/bin/aircast-${ARCH_VAR} -h"
        /bin/aircast-${ARCH_VAR} -h
        /bin/aircast-${ARCH_VAR} -Z
     else
-       /bin/aircast-"${ARCH_VAR}" "${AIRCAST_VAR}"
+       /bin/aircast-${ARCH_VAR} ${AIRCAST_VAR}
     fi
 fi
 
