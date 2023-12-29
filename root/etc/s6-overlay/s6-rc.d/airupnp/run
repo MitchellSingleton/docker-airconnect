@@ -2,7 +2,7 @@
 
 echo "Starting airupnp run"
 
-if [ "${AIRCAST_VAR}" == "kill" ]; then
+if [ "${AIRUPNP_VAR}" == "kill" ]; then
     echo "Exiting airupnp run - due to kill"
     exit 0
 fi
