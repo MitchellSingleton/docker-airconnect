@@ -34,6 +34,9 @@ case $ARCH_VAR in
     ;;
 esac
 
+# switch to the static version on executable
+ARCH_VAR="${ARCH_VAR}-static"
+
 # Adjusting process names in supervisord for Architecture differences
 #[ "$ARCH_VAR" != "linux-x86_64" ] && sed -i 's;process_name = airupnp-linux-x86_64;process_name = airupnp-'"$ARCH_VAR"';' /etc/supervisord.conf
 #[ "$ARCH_VAR" != "linux-x86_64" ] && sed -i 's;process_name = aircast-linux-x86_64;process_name = aircast-'"$ARCH_VAR"';' /etc/supervisord.conf
@@ -130,7 +133,7 @@ else
 fi
 
 # copy specified binaries into place unless skipped by kill variable
-echo "copying ${var_path}/${var_version}/*.dll to /bin/airupnp-${ARCH_VAR}"
+echo "copying ${var_path}/${var_version}/*.dll to /bin/"
 cp ${var_path}/${var_version}/*.dll /bin/
 echo "$(ls -la /bin/*.dll)"
     
