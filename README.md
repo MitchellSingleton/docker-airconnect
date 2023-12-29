@@ -22,13 +22,13 @@ better testing
 
 # docker-airconnect
 Minimal docker container with AirConnect for turning Chromecast and UPNP devices into Airplay targets  
-On DockerHub: https://hub.docker.com/r/mitchellsingleton/docker-airconnect
+Published on DockerHub: https://hub.docker.com/r/mitchellsingleton/docker-airconnect
 
-This is a container with the fantastic program by [philippe44](https://github.com/philippe44) called AirConnect. It allows you to be able to use AirPlay to push audio to either Chromecast and / or UPNP based devices (Sonos). There are some advanced details and information that you should review on his [GitHub Project](https://github.com/philippe44/AirConnect). This container image allows passing any of the command line parameters through an environmental variable. This container does need to be launched using Host networking mode. I recommend also mounting a persistant volume and passing in through an environment variable the path. This will allow reducing the number of times that downloads will occur.
+This is a container with the fantastic program by [philippe44](https://github.com/philippe44) called AirConnect. It allows you to be able to use Apple AirPlay v1 to push audio to either Chromecast and / or UPNP based devices (Sonos). There are some advanced details and information that you should review on his [GitHub Project](https://github.com/philippe44/AirConnect). This container image allows passing any of the command line parameters through an environmental variable. This container does need to be launched using Host networking mode. I recommend also mounting a persistant volume and passing in through an environment variable the path. This will allow reducing the number of times that downloads will occur.
 
 The main purpose of this derivation from the previous repository image (https://github.com/1activegeek/docker-airconnect) is to rework the scripts and logic so that this container doesn't need to be rebuilt upon a new release of AirConnect.
 
-What differentiates this image over the others out there, is that this container acquires the AirConnect executable during container startup. It can get the latest version of the app or a specific tagged version from the AirConnect GitHub page. It uses the alpine base image (v 3.19) and s6 produced by the [LS.io team](https://github.com/linuxserver).
+What differentiates this image over the others out there, is that this container acquires the AirConnect executable(s) during container startup. It can get the latest version of the app (default) or a specific tagged version using an environment variable from the AirConnect GitHub page. It uses the alpine base image (v 3.19) and s6 produced by the [LS.io team](https://github.com/linuxserver).
 
 This image has been built using multi-architecture support for AMD64, ARM64, and ARM devices.
 
