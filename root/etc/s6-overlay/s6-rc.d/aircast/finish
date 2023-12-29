@@ -2,10 +2,21 @@
 
 echo "Starting aircast finish"
 
+if [ "$ARCH_VAR" == "amd64" ]; then
+  ARCH_VAR=linux-x86_64
+elif [ "$ARCH_VAR" == "arm64" ]; then
+  ARCH_VAR=linux-aarch64
+elif [ "$ARCH_VAR" == "arm" ]; then
+  ARCH_VAR=linux-arm
+fi
+
+echo "ARCH_VAR=${ARCH_VAR}"
+ARCH_VAR="${ARCH_VAR}-static"
+
 echo "/bin/aircast-${ARCH_VAR}"
 if [ ! -f /bin/aircast-${ARCH_VAR} ]; then
     echo "/bin/aircast-${ARCH_VAR} executable not found - exit 125 to prevent restart"
     exit 125
 fi
 
-echo "Exiting aircast finish - will be restarted"
+echo "Exiting aircast finis"
