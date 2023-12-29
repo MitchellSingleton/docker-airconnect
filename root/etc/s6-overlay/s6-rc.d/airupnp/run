@@ -40,7 +40,7 @@ else
     echo "executable /bin/airupnp-"${ARCH_VAR}" exists"
     if [ -z "${AIRUPNP_VAR}" ]; then
         echo "AIRUPNP_VAR empty, setting it to defaults"
-        AIRUPNP_VAR="-l 1000:2000 -z"
+        AIRUPNP_VAR="-l 1000:2000"
         echo "AIRUPNP_VAR=${AIRUPNP_VAR}"
     fi
     echo "/bin/airupnp-${ARCH_VAR} -h"
