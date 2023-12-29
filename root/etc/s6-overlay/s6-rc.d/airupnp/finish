@@ -2,6 +2,17 @@
 
 echo "Starting airupnp finish"
 
+if [ "$ARCH_VAR" == "amd64" ]; then
+  ARCH_VAR=linux-x86_64
+elif [ "$ARCH_VAR" == "arm64" ]; then
+  ARCH_VAR=linux-aarch64
+elif [ "$ARCH_VAR" == "arm" ]; then
+  ARCH_VAR=linux-arm
+fi
+
+echo "ARCH_VAR=${ARCH_VAR}"
+ARCH_VAR="${ARCH_VAR}-static"
+
 echo "/bin/airupnp-${ARCH_VAR}"
 if [ ! -f /bin/airupnp-${ARCH_VAR} ]; then
     echo "/bin/airupnp-${ARCH_VAR} executable not found - exit 125 to prevent restart"
