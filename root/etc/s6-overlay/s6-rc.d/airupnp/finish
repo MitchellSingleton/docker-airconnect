@@ -1,0 +1,4 @@
+if [ ! -f /bin/airupnp-"${ARCH_VAR}" ]; then
+    echo "/bin/airupnp-"${ARCH_VAR}" executable not found - setting service to down"
+    exit 125
+fi
