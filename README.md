@@ -3,14 +3,16 @@ changes:
 * changed image from ls.io ubuntu to ls.io alpine
 * changed the script order to download airconnect on container start (instead of requiring a container build)
 * added environment variables for persistent path and specific AirConnect version
-* * path allows specifying a persistant storage
-*  version allows specifying a specific version of airconnect
+  * PATH_VAR - allows specifying a persistant storagepath
+  * VERSION_VAR - allows specifying a specific version of airconnect
+  * MAXTOKEEP_VAR - allows specifying how many previous version in the path (if it isn't persistent, only the most recent one will be there)
 * added check to only download a file if it doesn't already exist in persistent path
 * changed the extraction to only pull out the executables needed (changed to statically built ones)
 * added check to only extract the binary files if they don't already exist
 
 testing:
-passed on raspberry 3b+ running the linux-aarch64-static version of AirConnect 1.6.2 (killed aircast)
+passed on RaspberryPi 3b+ running the linux-aarch64-static version of AirConnect 1.6.2 (killed aircast)
+passed on RaspberryPi 4 running the linux-aarch64-static version of AirConnect 1.6.2 (killed aircast)
 
 future:
 only keep x number of directories of previous versions
@@ -25,36 +27,35 @@ If you like what I've created, please consider contributing:
 <br>
 
 # docker-airconnect
-AirConnect container for turning Chromecast into Airplay targets  
+Minimal docker container with AirConnect for turning Chromecast and UPNP devices into Airplay targets  
 On DockerHub: https://hub.docker.com/r/mitchellsingleton/docker-airconnect
 
-This is a containerized build of the fantastic program by [philippe44](https://github.com/philippe44) called AirConnect. It allows you to be able to use AirPlay to push audio to either Chromecast and / or UPNP based devices. There are some advanced details and information that you should review on his [GitHub Project](https://github.com/philippe44/AirConnect). For the most part this container needs nothing more than to launch it using Host networking. I recommend also mounting a persistant volume and passing in through an environment variable the path. This will allow reducing the number of times that downloads will occur.
+This is a container with the fantastic program by [philippe44](https://github.com/philippe44) called AirConnect. It allows you to be able to use AirPlay to push audio to either Chromecast and / or UPNP based devices (Sonos). There are some advanced details and information that you should review on his [GitHub Project](https://github.com/philippe44/AirConnect). This container image allows passing any of the command line parameters through an environmental variable. This container does need to be launched using Host networking mode. I recommend also mounting a persistant volume and passing in through an environment variable the path. This will allow reducing the number of times that downloads will occur.
 
-The main purpose to fork and rework this container is that I was having to wait for the image to be built and published. what differentiates this image over the others out there, is that this container updates during startup. It can get the latest version of the app or a specific version as from the original GitHub page. This image uses runtime scripting to allow it to be able to pull the latest version of the executable before running. It uses the alpine base image and s6 produced by the [LS.io team](https://github.com/linuxserver) to reduce footprint.
+The main purpose of this derivation from the previous repository image (https://github.com/1activegeek/docker-airconnect) is to rework the scripts and logic so that this container doesn't need to be rebuilt upon a new release of AirConnect.
 
-Multi-arch support has been introduced, so there should be seamless use on AMD64, ARM64, and ARM devices.
+What differentiates this image over the others out there, is that this container acquires the AirConnect executable during container startup. It can get the latest version of the app or a specific tagged version from the AirConnect GitHub page. It uses the alpine base image (v 3.19) and s6 produced by the [LS.io team](https://github.com/linuxserver).
+
+This image has been built using multi-architecture support for AMD64, ARM64, and ARM devices.
 
 # Running
 
 This can be run using a docker compose file or a standard docker run command.
 
-Sample Docker run config:
+Sample docker compose file (includes environment variable so the aircast executable is never started and custom parameters for the airupnp executable):
 
-`docker run -d --net=host mitchellsingleton/docker-airconnect`
-
-Sample docker compose file:
-
-`version: '3.9'
+```
+version: '3.9'
 services:
     airconnect:
         network_mode: host
         image: mitchellsingleton/docker-airconnect
         environment:
-            - "AIRCAST_VAR=kill"
-            - "AIRUPNP_VAR=-x /config/airconnect-airupnp.xml -l 1000:2000"
-            - "PATH_VAR=/config"
-            #- "VERSION_VAR="
-            - "MAXTOKEEP_VAR=10"
+            - "AIRCAST_VAR=kill" #this prevents the aircast executable from starting
+            - "AIRUPNP_VAR=-x /config/airconnect-airupnp.xml -l 1000:2000" #custom parameters for the airupnp executable, the -x parameter loads a config file
+            - "PATH_VAR=/config" #variable of where to store executables
+            #- "VERSION_VAR=" #variable for a specific version, default is latest.
+            - "MAXTOKEEP_VAR=10" #variable to only keep the most recent number of versions (uses modification date)
 
         volumes:
             - /mnt/docker_airconnect_data:/config
@@ -65,20 +66,24 @@ networks:
     outside:
       name: "host"
       external: true`
+```
 
+Bare minimum Docker run config (will run both aircast and airupnp executables):
+
+`docker run -d --net=host mitchellsingleton/docker-airconnect`
 
 If you would like to run a specific version of AirConnect you can now specify the Release Version corresponding to the releases from the original developer of the application as found here: https://github.com/philippe44/AirConnect/releases. This can be done by using an evironment variable named "VERSION_VAR". For example, to run release 1.6.1 use:
 
 `docker run -d --net=host -e VERSION_VAR=1.6.1 mitchellsingleton/docker-airconnect`
 
-I've introduced a secondary function as well in case you'd like to run the container with specifc runtime variables appended to the run config. This includes things such as the examples below in the troubleshooting section. It's purpose is more aimed at folks who'd like to use a custom configuration file for example, which requires running with `-x <name of file>` to be able to run this config.
+Environment variables that can be used when you run the container:
+* `AIRCAST_VAR` - This variable allows passing command line parameters to the aircast executable or using the special case of 'kill' to disable the aircast service.
+  Note: do not add -z or -Z to deamonize or the s6 overlay will think the service died and will start it again.
+* `AIRUPNP_VAR` - This variable allows passing command line parameters to  to send to the airupnp runtime used for integration with Sonos and UPnP based devices
+  Note: do not add -z or -Z to deamonize or the s6 overlay will think the service died and will start it again.
+   **If you alter this variable you need to add in `-l 1000:2000` per the devs notes for Sonos/Heos players. If you don't alter the variable, I include this by default in the docker files**
 
-To utilize this, please use the following environment variables when you run the container:
-- `AIRCAST_VAR` This will be for variables to send to the aircast runtime used for integration with Chromecast based devices
-- `AIRUPNP_VAR` This will be for variables to send to the airupnp runtime used for integration with Sonos and UPnP based devices
-  - **If you alter this variable you need to add in `-l 1000:2000` per the devs notes for Sonos/Heos players. If you don't alter the variable, I include this by default in the docker files**
-
-If you do not wish to run both services and only need one, you can choose to kill the second service on startup so that it does not run. To do this, use the appropriate variable from above (`AIRCAST_VAR`/`AIRUPNP_VAR`) and set it equal to `kill`. This will remove the other service from the startup files and you should not see both services running if you view the docker container logs. 
+If you only need one service, you can choose to kill the unneeded service on startup so that it does not run. To do this, use the appropriate variable from above (`AIRCAST_VAR`/`AIRUPNP_VAR`) and set it equal to `kill`. This will prevent the service from starting up.
 
 ### Runtime Commands
 
