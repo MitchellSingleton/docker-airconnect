@@ -3,8 +3,8 @@
 echo "Starting aircast finish"
 
 if [ ! -f /bin/aircast-"${ARCH_VAR}" ]; then
-    echo "/bin/aircast-"${ARCH_VAR}" executable not found - setting service to down"
+    echo "/bin/aircast-"${ARCH_VAR}" executable not found - exit 125 to prevent restart"
     exit 125
 fi
 
-echo "Exiting aircast finish"
+echo "Exiting aircast finish - will be restarted"
