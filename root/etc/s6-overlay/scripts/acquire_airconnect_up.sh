@@ -108,6 +108,12 @@ if [ -f /bin/aircast-${ARCH_VAR} ]; then
     rm /bin/aircast-${ARCH_VAR}
 fi
 
+echo "======= Services that are up ========"
+s6-rc -a list
+echo "======= Services that are down ======="
+s6-rc -da list
+
+
 # copy specified binaries into place unless skipped by kill variable
 if [ "$AIRUPNP_VAR" != "kill" ]; then
     echo "copying ${var_path}/${var_version}/airupnp-${ARCH_VAR} to /bin/airupnp-${ARCH_VAR}"
@@ -115,11 +121,11 @@ if [ "$AIRUPNP_VAR" != "kill" ]; then
     && chmod +x /bin/airupnp-$ARCH_VAR
     echo "$(ls -la /bin/airupnp-$ARCH_VAR)"
     echo "setting airupnp service to up"
-    s6-svc -u /var/run/s6/services/airupnp  
+    s6-rc -u /var/run/s6/services/airupnp  
 else
     echo "Skipping copy of ${var_path}/${var_version}/airupnp-${ARCH_VAR}"
     echo "setting airupnp service to down"
-    s6-svc -d /var/run/s6/services/airupnp
+    s6-rc -d /var/run/s6/services/airupnp
 fi
 
 # copy specified binaries into place unless skipped by kill variable
@@ -129,11 +135,11 @@ if [ "$AIRCAST_VAR" != "kill" ]; then
     && chmod +x /bin/aircast-$ARCH_VAR
     echo "$(ls -la /bin/aircast-$ARCH_VAR)"
     echo "setting aircast service to up"
-    s6-svc -u /var/run/s6/services/aircast
+    s6-rc -u /var/run/s6/services/aircast
 else
     echo "Skipping copy of ${var_path}/${var_version}/aircast-${ARCH_VAR}"
     echo "setting aircast service to down"
-    s6-svc -d /var/run/s6/services/aircast
+    s6-rc -d /var/run/s6/services/aircast
 fi
 
 # copy specified binaries into place unless skipped by kill variable
