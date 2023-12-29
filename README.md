@@ -1,27 +1,20 @@
-changes committed:
-moved the script to download airconnect from image build to on container run
-added environment variables for path and version
-path allows specifying a persistant storage
-version allows specifying a specific version of airconnect
-added check to only download a file if it doesn't already exist in path
-added check to only extract if binary files if they don't already exist
-changed image from ubuntu cloud to alpine
+changes:
+changed from supervisor to s6
+changed image from ls.io ubuntu to ls.io alpine
+changed the script order to download airconnect on container start (instead of container build)
+added environment variables for persistent path and specific AirConnect version
+* path allows specifying a persistant storage
+* version allows specifying a specific version of airconnect
+added check to only download a file if it doesn't already exist in persistent path
+changed the extraction to only pull out the executables needed (changed to statically built ones)
+added check to only extract the binary files if they don't already exist
+
+testing:
+passed on raspberry 3b+ running the linux-aarch64-static version of AirConnect 1.6.2 (killed aircast)
 
 future:
-figure out how to build image
-test changes
-publish to git-hub
-publish to docker
-change from supervisor to s6
-
-
-
-Branch Status
-<br>
-Master: ![Master](https://github.com/MitchellSingleton/docker-airconnect/workflows/Multi-Arch%20Build/badge.svg?branch=master)
-<br>
-Dev: ![Development](https://github.com/MitchellSingleton/docker-airconnect/workflows/Multi-Arch%20Build/badge.svg?branch=dev)
-<br>
+only keep x number of directories of previous versions
+better testing
 
 If you like what I've created, please consider contributing:
 <br>
@@ -33,12 +26,11 @@ If you like what I've created, please consider contributing:
 
 # docker-airconnect
 AirConnect container for turning Chromecast into Airplay targets  
-On DockerHub: https://hub.docker.com/r/1activegeek/airconnect  
-On GitHub: https://github.com/1activegeek/docker-airconnect  
+On DockerHub: https://hub.docker.com/r/1activegeek/airconnect
 
-This is a containerized build of the fantastic program by [philippe44](https://github.com/philippe44) called AirConnect. It allows you to be able to use AirPlay to push audio to Chromecast and UPNP based devices. There are some advanced details and information that you should review on his [GitHub Project](https://github.com/philippe44/AirConnect). For the most part this container needs nothing more than to launch it using Host networking.
+This is a containerized build of the fantastic program by [philippe44](https://github.com/philippe44) called AirConnect. It allows you to be able to use AirPlay to push audio to Chromecast and UPNP based devices. There are some advanced details and information that you should review on his [GitHub Project](https://github.com/philippe44/AirConnect). For the most part this container needs nothing more than to launch it using Host networking. I recommend also mounting a persistant volume and passing in through an environment variable the path. This will allow reducing the number of times that downloads will occur.
 
-The main purpose for building this container over the others out there, is that this will always update to the latest version of the app as pulled from the original GitHub page. Currently there is another popular container that is not updated. This uses runtime scripting to ensure it will always pull the latest version of the binary before running - without intervention by me. It also uses the base image produced by the [LS.io team](https://github.com/linuxserver) to reduce footprint.
+The main purpose for building this container over the others out there, is that this will always update to the latest version of the app as pulled from the original GitHub page. Currently there is another popular container that is not updated. This uses runtime scripting to ensure it will always pull the latest version of the binary before running - without intervention by me. It also uses the alpine base image produced by the [LS.io team](https://github.com/linuxserver) to reduce footprint.
 
 Multi-arch support has been introduced, so there should be seamless use on AMD64, ARM64, and ARM devices.
 
