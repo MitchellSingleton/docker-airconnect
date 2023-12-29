@@ -2,6 +2,11 @@
 
 echo "Starting airupnp run"
 
+if [ "${AIRCAST_VAR}" == "kill" ]; then
+    echo "Exiting airupnp run - due to kill"
+    exit 0
+fi
+
 if [ "$ARCH_VAR" == "amd64" ]; then
   ARCH_VAR=linux-x86_64
 elif [ "$ARCH_VAR" == "arm64" ]; then
