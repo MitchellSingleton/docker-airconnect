@@ -29,15 +29,19 @@ case $ARCH_VAR in
     ;;
 esac
 
+echo "ARCH_VAR=${ARCH_VAR}"
 ARCH_VAR="${ARCH_VAR}-static"
 
+
 if [ ! -f /bin/aircast-"${ARCH_VAR}" ]; then
-    echo "/bin/airupnp-"${ARCH_VAR}" executable not found - setting service to down"
+    echo "/bin/aircast-"${ARCH_VAR}" executable not found - setting service to down"
     s6-svc -d /etc/s6-overlay/s6-rc.d/aircast
 else
     echo "file exists"
     if [ -z "${AIRCAST_VAR}" ]; then
-       /bin/aircast-"${ARCH_VAR}"
+       echo "/bin/aircast-${ARCH_VAR} -h"
+       /bin/aircast-${ARCH_VAR} -h
+       /bin/aircast-${ARCH_VAR} -z
     else
        /bin/aircast-"${ARCH_VAR}" "${AIRCAST_VAR}"
     fi
