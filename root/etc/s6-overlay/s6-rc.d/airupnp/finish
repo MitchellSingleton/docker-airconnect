@@ -4,7 +4,8 @@ echo "Starting airupnp finish"
 
 echo "/bin/airupnp-${ARCH_VAR}"
 if [ ! -f /bin/airupnp-${ARCH_VAR} ]; then
-    echo "/bin/airupnp-${ARCH_VAR} executable not found - /bin/aircast-"${ARCH_VAR}""
+    echo "/bin/airupnp-${ARCH_VAR} executable not found - exit 125 to prevent restart"
+    echo "Exiting airupnp finish - 125"
     exit 125
 fi
 
