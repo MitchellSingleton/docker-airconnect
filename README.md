@@ -1,3 +1,5 @@
+# Changelog
+
 changes:
 * changed from supervisor to s6
 * changed image from ls.io ubuntu to ls.io alpine
@@ -17,14 +19,6 @@ passed on RaspberryPi 4 running the linux-aarch64-static version of AirConnect 1
 future:
 only keep x number of directories of previous versions
 better testing
-
-If you like what I've created, please consider contributing:
-<br>
-<a href="https://www.paypal.com/paypalme"><img src="https://img.shields.io/badge/PayPal-Make%20a%20Donation-grey?style=for-the-badge&logo=paypal&labelColor=000000"></a>
-<br>
-<a href="https://ko-fi.com/"><img src="https://img.shields.io/badge/Coffee-Buy%20me%20a%20Coffee-grey?style=for-the-badge&logo=buy-me-a-coffee&labelColor=000000"></a>
-<br>
-<br>
 
 # docker-airconnect
 Minimal docker container with AirConnect for turning Chromecast and UPNP devices into Airplay targets  
@@ -79,15 +73,18 @@ If you would like to run a specific version of AirConnect you can now specify th
 Environment variables that can be used when you run the container:
 * `AIRCAST_VAR` - This variable allows passing command line parameters to the aircast executable or using the special case of 'kill' to disable the aircast service.
   Note: do not add -z or -Z to deamonize or the s6 overlay will think the service died and will start it again.
-* `AIRUPNP_VAR` - This variable allows passing command line parameters to  to send to the airupnp runtime used for integration with Sonos and UPnP based devices
+* `AIRUPNP_VAR` - This variable allows passing command line parameters to the airupnp executable or using the special case of 'kill' to disable the airupnp service.
   Note: do not add -z or -Z to deamonize or the s6 overlay will think the service died and will start it again.
-   **If you alter this variable you need to add in `-l 1000:2000` per the devs notes for Sonos/Heos players. If you don't alter the variable, I include this by default in the docker files**
+  Note: add in `-l 1000:2000` per the devs notes for Sonos/Heos players. This is part of the current default string.
+* `PATH_VAR` - allows specifying a persistant storage path
+* `VERSION_VAR` - allows specifying a specific version of airconnect
+* `MAXTOKEEP_VAR` - allows specifying how many previous version in the path (if it isn't persistent, only the most recent one will be there)
 
 If you only need one service, you can choose to kill the unneeded service on startup so that it does not run. To do this, use the appropriate variable from above (`AIRCAST_VAR`/`AIRUPNP_VAR`) and set it equal to `kill`. This will prevent the service from starting up.
 
 ### Runtime Commands
 
-The current usage can be seen in the docker output
+The current usage information displaying the available command line parameters can be seen in the docker output.
 
 ```
 Usage: [options]
@@ -108,25 +105,24 @@ Usage: [options]
 
 # Troubleshooting
 
-If you need to attempt to dig into troubleshooting and see the logs realtime in the container, use the following examples to help dig into diagnosis.
+1. does the executable run successfully outside the container?
+2. what output can be seen 
+
+Troubleshooting can be done outside of the container or inside the container, use the following examples to help dig into diagnosis.
 
 `docker exec -it <name of container> bash`
 
-Once inside the container, you can use standard config options to run the app as outlined by the creator. The app is located in the `/bin` directory. Both the UPNP and Cast versions of the file are being run in this container. (sub your platform below if not running x86-64 - arm64 = aarch64, arm = arm).
+Once inside the container, you can use standard config options to run the app as outlined by the creator. The executables will be located in the `/bin` directory. Both the UPNP and Cast versions of the file are being run in this container. (sub your platform below if not running x86-64 - arm64 = aarch64, arm = arm).
 
 `./aircast-x86-64 --h` - will provide you a list of commands that can be run via the app
 
 `./aircast-x86-64 -d all=debug` - will run the app and output a debug based log in an interactive mode
 
-If you perform any realtime testing, it is suggested to completely restart the container after testing to be sure there are no incompatibilities that arise with running it in daemon mode while also running it interactively.
+If you perform any testing inside the container, it is suggested to completely restart the container after testing to be sure there are no incompatibilities.
 
-# Changelog
-**2023-10-21:** Package maintainer changed the release asset output, had to move from tarball to zip package. No major change should be experienced as the output is still the same. Also added link in docs to an ARMv7 repo for those using older devices stuck on ARMv7 release maintained by [sidevesh](https://github.com/sidevesh). <br>
-**2023-07-08:** The LS.io team has officially deprecated building ARMv7 base images. Had to deprecate this support as well. Attempted to comment out in case changes happen in the future to remedy this. <br>
-**2022-11-28:** Some recent updates to handle changes by the original developer in formatting for binary file names. More efficient workflow runs as well. Added in output of tags for AirConnect versions, allowing you to specifically use a specific version of AirConnect. <br>
-**2022-01-03:** Fixed the multi-arch builds with the new setup on GH actions, migrated to single unified Dockerfile deployment<br>
-**2021-12-12:** Modified the builder to use the docker buildx GH actions, and manifest to be just the single tag. Additionally the Binary pull has been moved from startup script, to the actual dockerfile. This results in the images being a point-in-time version of the current airconnect binaries vs always running the latest. `kill` function introduced for the AIRUPNP_VAR/AIRCAST_VAR variables which will stop the appropriate service from running (in case you are not using it).
-
-<p>
-<p>
-<a href="https://ko-fi.com/" target="_blank"><img src="https://user-images.githubusercontent.com/1685680/61808727-4925de00-ae3c-11e9-9d60-66bef358fd8e.png" alt="Buy Me A Coffee" style="height: 50px !important;width: auto !important;" ></a>
+# Appreciation
+If you like what I've created, please consider contributing:
+<br>
+<a href="https://www.paypal.com/paypalme"><img src="https://img.shields.io/badge/PayPal-Make%20a%20Donation-grey?style=for-the-badge&logo=paypal&labelColor=000000"></a>
+<br>
+<a href="https://ko-fi.com/"><img src="https://img.shields.io/badge/Coffee-Buy%20me%20a%20Coffee-grey?style=for-the-badge&logo=buy-me-a-coffee&labelColor=000000"></a>
