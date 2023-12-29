@@ -29,7 +29,9 @@ case $ARCH_VAR in
     ;;
 esac
 
+echo "ARCH_VAR=${ARCH_VAR}"
 ARCH_VAR="${ARCH_VAR}-static"
+echo "ARCH_VAR=${ARCH_VAR}"
 
 if [ ! -f /bin/airupnp-"${ARCH_VAR}" ]; then
     echo "/bin/airupnp-"${ARCH_VAR}" executable not found - setting service to down"
@@ -37,9 +39,14 @@ if [ ! -f /bin/airupnp-"${ARCH_VAR}" ]; then
 else    
     echo "executable /bin/airupnp-"${ARCH_VAR}" exists"
     if [ -z "${AIRUPNP_VAR}" ]; then
-       AIRUPNP_VAR="-l 1000:2000 -z"
+        echo "AIRUPNP_VAR empty, setting it to defaults"
+        AIRUPNP_VAR="-l 1000:2000 -z"
+        echo "AIRUPNP_VAR=${AIRUPNP_VAR}"
     fi
-    /bin/airupnp-"${ARCH_VAR}" "${AIRUPNP_VAR}"
+    echo "/bin/airupnp-${ARCH_VAR} -h"
+    /bin/airupnp-${ARCH_VAR} -h
+    echo "/bin/airupnp-${ARCH_VAR} ${AIRUPNP_VAR}"
+    /bin/airupnp-${ARCH_VAR} ${AIRUPNP_VAR}
 fi
 
 echo "Exiting airupnp run"
