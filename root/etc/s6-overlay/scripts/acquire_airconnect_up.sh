@@ -121,11 +121,17 @@ if [ "$AIRUPNP_VAR" != "kill" ]; then
     && chmod +x /bin/airupnp-$ARCH_VAR
     echo "$(ls -la /bin/airupnp-$ARCH_VAR)"
     echo "setting airupnp service to up"
-    s6-rc -u /var/run/s6/services/airupnp  
+    echo "s6-rc -u /var/run/s6/services/airupnp"
+    s6-rc -u /var/run/s6/services/airupnp
+    echo "s6-rc -u airupnp"
+    s6-rc -u airupnp
 else
     echo "Skipping copy of ${var_path}/${var_version}/airupnp-${ARCH_VAR}"
     echo "setting airupnp service to down"
+    echo "s6-rc -d /var/run/s6/services/airupnp"
     s6-rc -d /var/run/s6/services/airupnp
+    echo "s6-rc -d airupnp"
+    s6-rc -d airupnp
 fi
 
 # copy specified binaries into place unless skipped by kill variable
@@ -135,11 +141,17 @@ if [ "$AIRCAST_VAR" != "kill" ]; then
     && chmod +x /bin/aircast-$ARCH_VAR
     echo "$(ls -la /bin/aircast-$ARCH_VAR)"
     echo "setting aircast service to up"
+    echo "s6-rc -u /var/run/s6/services/aircast"
     s6-rc -u /var/run/s6/services/aircast
+    echo "s6-rc -u aircast"
+    s6-rc -u aircast
 else
     echo "Skipping copy of ${var_path}/${var_version}/aircast-${ARCH_VAR}"
     echo "setting aircast service to down"
+    echo "s6-rc -d /var/run/s6/services/aircast"
     s6-rc -d /var/run/s6/services/aircast
+    echo "s6-rc -d aircast"
+    s6-rc -d aircast
 fi
 
 # copy specified binaries into place unless skipped by kill variable
