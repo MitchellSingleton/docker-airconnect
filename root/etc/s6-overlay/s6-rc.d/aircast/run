@@ -41,7 +41,7 @@ else
     if [ -z "${AIRCAST_VAR}" ]; then
        echo "/bin/aircast-${ARCH_VAR} -h"
        /bin/aircast-${ARCH_VAR} -h
-       /bin/aircast-${ARCH_VAR} -z
+       /bin/aircast-${ARCH_VAR} -Z
     else
        /bin/aircast-"${ARCH_VAR}" "${AIRCAST_VAR}"
     fi
