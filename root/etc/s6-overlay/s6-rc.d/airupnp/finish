@@ -1,4 +1,10 @@
+#!/usr/bin/with-contenv bash
+
+echo "Starting airupnp finish"
+
 if [ ! -f /bin/airupnp-"${ARCH_VAR}" ]; then
     echo "/bin/airupnp-"${ARCH_VAR}" executable not found - setting service to down"
     exit 125
 fi
+
+echo "Exiting airupnp finish"
