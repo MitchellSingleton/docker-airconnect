@@ -2,8 +2,8 @@
 
 echo "Start of acquire_airconnect_up.sh"
 
-# This one shot script is a dependacy and will run first.
-# It will check if the request version has been downloaded and if not download
+# This one-shot script is a dependacy and will run first.
+# It will check if the requested version has been downloaded and if not download it
 # It will check if the downloaded file has been unzipped and if not unzip
 # It will check if the desired binaries are copied into place with the correct permissions
 
@@ -11,8 +11,8 @@ if [ "$ARCH_VAR" == "amd64" ]; then
   ARCH_VAR=linux-x86_64
 elif [ "$ARCH_VAR" == "arm64" ]; then
   ARCH_VAR=linux-aarch64
-# elif [ "$ARCH_VAR" == "arm" ]; then
-#   ARCH_VAR=linux-arm
+elif [ "$ARCH_VAR" == "arm" ]; then
+   ARCH_VAR=linux-arm
 fi
 
 echo "Checking for valid arch options"
@@ -23,9 +23,9 @@ case $ARCH_VAR in
   linux-aarch64)
     echo "Proceeding with linux-aarch64 arch"
     ;;
-  # linux-arm)
-  #   echo "Proceeding with linux-arm arch"
-  #   ;;
+  linux-arm)
+    echo "Proceeding with linux-arm arch"
+    ;;
   *)
     echo "Unrecognized or invalid arch selection, CANCELING INSTALL"
     echo "========== FAILURE DETECTED ========="
@@ -34,21 +34,17 @@ case $ARCH_VAR in
     ;;
 esac
 
-# switch to the static version on executable
+# update variable so that the statically linked executable is used
 ARCH_VAR="${ARCH_VAR}-static"
 
-# Adjusting process names in supervisord for Architecture differences
-#[ "$ARCH_VAR" != "linux-x86_64" ] && sed -i 's;process_name = airupnp-linux-x86_64;process_name = airupnp-'"$ARCH_VAR"';' /etc/supervisord.conf
-#[ "$ARCH_VAR" != "linux-x86_64" ] && sed -i 's;process_name = aircast-linux-x86_64;process_name = aircast-'"$ARCH_VAR"';' /etc/supervisord.conf
-
-#test if PATH is not zero length and not null, if so use default, if not use variable
+#test if PATH_VAR is zero length or not set, if so use default, if not use the passed variable
 if [ -z "${PATH_VAR}" ]; then
    var_path="/tmp"
 else
    var_path="${PATH_VAR}"
 fi
 
-#test if VERSION is zero length or not set, if so use default, if not use variable
+#test if VERSION_VAR is zero length or not set, if so use default, if not use the passed variable
 if [ -z "${VERSION_VAR}" ]; then
    var_tag="latest"
 else
@@ -57,7 +53,7 @@ fi
 
 # download the json and grep out the URL for the supplied tag
 var_url=$(curl -s https://api.github.com/repos/philippe44/AirConnect/releases/${var_tag} | grep browser_download_url | cut -d '"' -f 4)
-# test if variable is zero length or not set (a bad version will result in a zero length url)
+# test if variable is zero length or not set (a bad version tag will result in a zero length url)
 if [ -z "${var_url}" ]; then
    var_url=$(curl -s https://api.github.com/repos/philippe44/AirConnect/releases/latest | grep browser_download_url | cut -d '"' -f 4)
 fi
@@ -65,14 +61,10 @@ fi
 #derive filename from URL
 var_filename=${var_url##*/}
 
-#derive version from filename
-var_version=${var_filename%.*}
-var_version=${var_version#*-}
-
 #future check if file already exists so that downloading can be skipped - only works if download location is persistant
 echo "testing if ${var_path}/${var_filename} exists"
-if [ ! -f /${var_path}/${var_filename} ]; then
-    echo "file not found, downloading"
+if [ ! -f ${var_path}/${var_filename} ]; then
+    echo "${var_path}/${var_filename} not found, downloading"
     mkdir -p ${var_path}
     # to allow saving download to path, change directory first.
     #future investigate curl version and --output-dir flag
@@ -84,20 +76,54 @@ else
     echo "file exists"
 fi
 
+#derive version from filename
+var_version=${var_filename%.*}
+#var_version=AirConnect-1.6.2
+#var_version=${var_version#*-}
+#var_version=1.6.2
+
 # test if desired binaries exist
 # if not, extract and copy files to path (to persist) and to the container
 # cleanup the extracted files
 echo "testing if either ${var_path}/${var_version}/airupnp-${ARCH_VAR} or ${var_path}/${var_version}/aircast-${ARCH_VAR} does not exists"
 if [ ! -f ${var_path}/${var_version}/airupnp-${ARCH_VAR} -o ! -f ${var_path}/${var_version}/aircast-${ARCH_VAR} ]; then
-    unzip ${var_path}/${var_filename} airupnp-${ARCH_VAR} aircast-${ARCH_VAR} *.dll -d ${var_path}/${var_filename%.*}/ \
-    && mkdir -p ${var_path}/${var_version} \
-    && mv ${var_path}/${var_filename%.*}/* ${var_path}/${var_version}/ \
-    && mv ${var_path}/${var_filename%.*}/*.dll ${var_path}/${var_version}/
-    echo "$(ls -la ${var_path}/${var_version}/)"
-    # clean up extracted files
-    echo "Removing ${var_path}/${var_filename%.*}/"
-    rm -r ${var_path}/${var_filename%.*}/
+    unzip -o ${var_path}/${var_filename} airupnp-${ARCH_VAR} aircast-${ARCH_VAR} -d ${var_path}/${var_version}/
 fi
+
+echo "$(ls -la ${var_path}/${var_version}/)"
+
+if [ -z "${MAXTOKEEP_VAR}" ]; then
+   var_max=3
+else
+   var_max=${MAXTOKEEP_VAR}
+fi
+cd ${var_path}
+n=0
+# only keep X versions of file
+ls -1t *.zip |
+while read file; do
+    n=$((n+1))
+    if [[ $n -gt $var_max ]]; then
+        rm -f "$file"
+    fi
+done
+n=0
+# only keep X versions of directories
+#ls -1t */ |
+#while read directory; do
+#    n=$((n+1))
+#    if [[ $n -gt $var_max ]]; then
+#        rm -f "$file"
+#    fi
+#done
+cd /
+
+
+#if [ ${var_version_count} -gt ${KEEP_VAR} ]; then
+#    # clean up extracted files
+#    echo "Removing ${var_path}/${var_filename%.*}/"
+#    rm -r ${var_path}/${var_filename%.*}/
+#fi
 
 if [ -f /bin/airupnp-${ARCH_VAR} ]; then
     echo "Removing old executable /bin/airupnp-${ARCH_VAR}"
@@ -108,30 +134,14 @@ if [ -f /bin/aircast-${ARCH_VAR} ]; then
     rm /bin/aircast-${ARCH_VAR}
 fi
 
-echo "======= Services that are up ========"
-s6-rc -a list
-echo "======= Services that are down ======="
-s6-rc -da list
-
-
 # copy specified binaries into place unless skipped by kill variable
 if [ "$AIRUPNP_VAR" != "kill" ]; then
     echo "copying ${var_path}/${var_version}/airupnp-${ARCH_VAR} to /bin/airupnp-${ARCH_VAR}"
     cp ${var_path}/${var_version}/airupnp-${ARCH_VAR} /bin/airupnp-${ARCH_VAR} \
     && chmod +x /bin/airupnp-$ARCH_VAR
     echo "$(ls -la /bin/airupnp-$ARCH_VAR)"
-    echo "setting airupnp service to up"
-    echo "s6-rc -u /var/run/s6/services/airupnp"
-    s6-rc -u /var/run/s6/services/airupnp
-    echo "s6-rc -u airupnp"
-    s6-rc -u airupnp
 else
     echo "Skipping copy of ${var_path}/${var_version}/airupnp-${ARCH_VAR}"
-    echo "setting airupnp service to down"
-    echo "s6-rc -d /var/run/s6/services/airupnp"
-    s6-rc -d /var/run/s6/services/airupnp
-    echo "s6-rc -d airupnp"
-    s6-rc -d airupnp
 fi
 
 # copy specified binaries into place unless skipped by kill variable
@@ -140,23 +150,8 @@ if [ "$AIRCAST_VAR" != "kill" ]; then
     cp ${var_path}/${var_version}/aircast-${ARCH_VAR} /bin/aircast-${ARCH_VAR} \
     && chmod +x /bin/aircast-$ARCH_VAR
     echo "$(ls -la /bin/aircast-$ARCH_VAR)"
-    echo "setting aircast service to up"
-    echo "s6-rc -u /var/run/s6/services/aircast"
-    s6-rc -u /var/run/s6/services/aircast
-    echo "s6-rc -u aircast"
-    s6-rc -u aircast
 else
     echo "Skipping copy of ${var_path}/${var_version}/aircast-${ARCH_VAR}"
-    echo "setting aircast service to down"
-    echo "s6-rc -d /var/run/s6/services/aircast"
-    s6-rc -d /var/run/s6/services/aircast
-    echo "s6-rc -d aircast"
-    s6-rc -d aircast
 fi
-
-# copy specified binaries into place unless skipped by kill variable
-#echo "copying ${var_path}/${var_version}/*.dll to /bin/"
-#cp ${var_path}/${var_version}/*.dll /bin/
-#echo "$(ls -la /bin/*.dll)"
     
 echo "end of acquire_airconnect_up.sh"
