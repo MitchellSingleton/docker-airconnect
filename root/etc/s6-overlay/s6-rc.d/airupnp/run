@@ -35,7 +35,7 @@ echo "ARCH_VAR=${ARCH_VAR}"
 
 if [ ! -f /bin/airupnp-"${ARCH_VAR}" ]; then
     echo "/bin/airupnp-"${ARCH_VAR}" executable not found - setting service to down"
-    s6-svc -d /etc/s6-overlay/s6-rc.d/airupnp
+    s6-svc -d /var/run/s6/services/airupnp
 else    
     echo "executable /bin/airupnp-"${ARCH_VAR}" exists"
     if [ -z "${AIRUPNP_VAR}" ]; then
