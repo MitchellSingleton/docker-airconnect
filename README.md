@@ -1,13 +1,13 @@
 changes:
-changed from supervisor to s6
-changed image from ls.io ubuntu to ls.io alpine
-changed the script order to download airconnect on container start (instead of container build)
-added environment variables for persistent path and specific AirConnect version
-* path allows specifying a persistant storage
-* version allows specifying a specific version of airconnect
-added check to only download a file if it doesn't already exist in persistent path
-changed the extraction to only pull out the executables needed (changed to statically built ones)
-added check to only extract the binary files if they don't already exist
+* changed from supervisor to s6
+* changed image from ls.io ubuntu to ls.io alpine
+* changed the script order to download airconnect on container start (instead of requiring a container build)
+* added environment variables for persistent path and specific AirConnect version
+* * path allows specifying a persistant storage
+*  version allows specifying a specific version of airconnect
+* added check to only download a file if it doesn't already exist in persistent path
+* changed the extraction to only pull out the executables needed (changed to statically built ones)
+* added check to only extract the binary files if they don't already exist
 
 testing:
 passed on raspberry 3b+ running the linux-aarch64-static version of AirConnect 1.6.2 (killed aircast)
@@ -26,11 +26,11 @@ If you like what I've created, please consider contributing:
 
 # docker-airconnect
 AirConnect container for turning Chromecast into Airplay targets  
-On DockerHub: https://hub.docker.com/r/1activegeek/airconnect
+On DockerHub: https://hub.docker.com/r/mitchellsingleton/docker-airconnect
 
-This is a containerized build of the fantastic program by [philippe44](https://github.com/philippe44) called AirConnect. It allows you to be able to use AirPlay to push audio to Chromecast and UPNP based devices. There are some advanced details and information that you should review on his [GitHub Project](https://github.com/philippe44/AirConnect). For the most part this container needs nothing more than to launch it using Host networking. I recommend also mounting a persistant volume and passing in through an environment variable the path. This will allow reducing the number of times that downloads will occur.
+This is a containerized build of the fantastic program by [philippe44](https://github.com/philippe44) called AirConnect. It allows you to be able to use AirPlay to push audio to either Chromecast and / or UPNP based devices. There are some advanced details and information that you should review on his [GitHub Project](https://github.com/philippe44/AirConnect). For the most part this container needs nothing more than to launch it using Host networking. I recommend also mounting a persistant volume and passing in through an environment variable the path. This will allow reducing the number of times that downloads will occur.
 
-The main purpose for building this container over the others out there, is that this will always update to the latest version of the app as pulled from the original GitHub page. Currently there is another popular container that is not updated. This uses runtime scripting to ensure it will always pull the latest version of the binary before running - without intervention by me. It also uses the alpine base image produced by the [LS.io team](https://github.com/linuxserver) to reduce footprint.
+The main purpose to fork and rework this container is that I was having to wait for the image to be built and published. what differentiates this image over the others out there, is that this container updates during startup. It can get the latest version of the app or a specific version as from the original GitHub page. This image uses runtime scripting to allow it to be able to pull the latest version of the executable before running. It uses the alpine base image and s6 produced by the [LS.io team](https://github.com/linuxserver) to reduce footprint.
 
 Multi-arch support has been introduced, so there should be seamless use on AMD64, ARM64, and ARM devices.
 
@@ -40,11 +40,36 @@ This can be run using a docker compose file or a standard docker run command.
 
 Sample Docker run config:
 
-`docker run -d --net=host 1activegeek/airconnect`
+`docker run -d --net=host mitchellsingleton/docker-airconnect`
 
-If you would like to run a specific version of AirConnect, or revert to a previous known good working version (in case my container breaks or other issues found in the original application itself) you can now specify the Release Version corresponding to the releases from the original developer of the application as found here: https://github.com/philippe44/AirConnect/releases. This can be done by using a similar command, but inserting the release number after the image name. For example to run release 1.0.8 use:
+Sample docker compose file:
 
-`docker run -d --net=host 1activegeek/airconnect:1.0.8`
+`version: '3.9'
+services:
+    airconnect:
+        network_mode: host
+        image: mitchellsingleton/docker-airconnect
+        environment:
+            - "AIRCAST_VAR=kill"
+            - "AIRUPNP_VAR=-x /config/airconnect-airupnp.xml -l 1000:2000"
+            - "PATH_VAR=/config"
+            #- "VERSION_VAR="
+            - "MAXTOKEEP_VAR=10"
+
+        volumes:
+            - /mnt/docker_airconnect_data:/config
+        networks:
+            - outside
+
+networks:
+    outside:
+      name: "host"
+      external: true`
+
+
+If you would like to run a specific version of AirConnect you can now specify the Release Version corresponding to the releases from the original developer of the application as found here: https://github.com/philippe44/AirConnect/releases. This can be done by using an evironment variable named "VERSION_VAR". For example, to run release 1.6.1 use:
+
+`docker run -d --net=host -e VERSION_VAR=1.6.1 mitchellsingleton/docker-airconnect`
 
 I've introduced a secondary function as well in case you'd like to run the container with specifc runtime variables appended to the run config. This includes things such as the examples below in the troubleshooting section. It's purpose is more aimed at folks who'd like to use a custom configuration file for example, which requires running with `-x <name of file>` to be able to run this config.
 
