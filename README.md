@@ -13,24 +13,24 @@ changes:
 * added check to only extract the binary files if they don't already exist
 
 testing:
-passed on RaspberryPi 3b+ running the linux-aarch64-static version of AirConnect 1.6.2 (killed aircast)
-passed on RaspberryPi 4 running the linux-aarch64-static version of AirConnect 1.6.2 (killed aircast)
+passed on RaspberryPi 3b+ running the linux-aarch64-static version of AirConnect 1.6.2 (killed aircast) using the docker command line to run on a standalone docker node.
+passed on RaspberryPi 4 running the linux-aarch64-static version of AirConnect 1.6.2 (killed aircast) using portainer to create a stack on a docker swarm.
 
 future:
 only keep x number of directories of previous versions
 better testing
 
 # docker-airconnect
-Minimal docker container with AirConnect for turning Chromecast and UPNP devices into Airplay targets  
+Minimal muti-architecture (AMD64, ARM64, and ARM) docker container with AirConnect for turning Chromecast and UPNP devices into Apple Airplay targets. the image is built from 
 Published on DockerHub: https://hub.docker.com/r/mitchellsingleton/docker-airconnect
 
-This is a container with the fantastic program by [philippe44](https://github.com/philippe44) called AirConnect. It allows you to be able to use Apple AirPlay v1 to push audio to either Chromecast and / or UPNP based devices (Sonos). There are some advanced details and information that you should review on his [GitHub Project](https://github.com/philippe44/AirConnect). This container image allows passing any of the command line parameters through an environmental variable. This container does need to be launched using Host networking mode. I recommend also mounting a persistant volume and passing in through an environment variable the path. This will allow reducing the number of times that downloads will occur.
+This is a container built with the fantastic program by [philippe44](https://github.com/philippe44) called AirConnect. It allows you to be able to use Apple AirPlay v1 to push audio to either Chromecast and / or UPNP based devices (Sonos). I highly recommend reading through the information and details that can be found on the GitHub Repository for AirConnect [GitHub Project](https://github.com/philippe44/AirConnect). This container image allows passing any of the command line parameters through an environmental variable. This container does need to be launched using Host networking mode. I recommend also mounting a persistant volume and passing in through an environment variable the path. This will allow reducing the number of times that downloads will occur.
 
 The main purpose of this derivation from the previous repository image (https://github.com/1activegeek/docker-airconnect) is to rework the scripts and logic so that this container doesn't need to be rebuilt upon a new release of AirConnect.
 
 What differentiates this image over the others out there, is that this container acquires the AirConnect executable(s) during container startup. It can get the latest version of the app (default) or a specific tagged version using an environment variable from the AirConnect GitHub page. It uses the alpine base image (v 3.19) and s6 produced by the [LS.io team](https://github.com/linuxserver).
 
-This image has been built using multi-architecture support for AMD64, ARM64, and ARM devices.
+This image has been built using Docker's buildx with multi-architecture support for AMD64, ARM64, and ARM devices.
 
 # Running
 
@@ -75,7 +75,7 @@ Environment variables that can be used when you run the container:
   Note: do not add -z or -Z to deamonize or the s6 overlay will think the service died and will start it again.
 * `AIRUPNP_VAR` - This variable allows passing command line parameters to the airupnp executable or using the special case of 'kill' to disable the airupnp service.
   Note: do not add -z or -Z to deamonize or the s6 overlay will think the service died and will start it again.
-  Note: add in `-l 1000:2000` per the devs notes for Sonos/Heos players. This is part of the current default string.
+  Note: add in `-l 1000:2000` per the AirConnect notes for Sonos/Heos players. This is part of the current default string.
 * `PATH_VAR` - allows specifying a persistant storage path
 * `VERSION_VAR` - allows specifying a specific version of airconnect
 * `MAXTOKEEP_VAR` - allows specifying how many previous version in the path (if it isn't persistent, only the most recent one will be there)
@@ -84,29 +84,42 @@ If you only need one service, you can choose to kill the unneeded service on sta
 
 ### Runtime Commands
 
-The current usage information displaying the available command line parameters can be seen in the docker output.
+The usage information listing available command line parameters can be seen in the docker output. This is a copy of the output from AirConnect v1.6.2:
 
 ```
+v1.6.2 (Dec 27 2023 @ 00:21:16)
+See -t for license terms
 Usage: [options]
-  -b < address>        network address to bind to
-  -c <mp3[:<rate>]|flc[:0..9]|wav>    audio format send to player
-  -x <config file>    read config from file (default is ./config.xml)
-  -i <config file>    discover players, save <config file> and exit
-  -I             auto save config at every network scan
-  -l <[rtp][:http][:f]>    RTP and HTTP latency (ms), ':f' forces silence fill
-  -r             let timing reference drift (no click)
-  -f <logfile>        Write debug to logfile
-  -p <pid file>        write PID in file
-  -d <log>=<level>    Set logging level, logs: all|raop|main|util|cast, level: error|warn|info|debug|sdebug
-  -Z             NOT interactive
-  -k             Immediate exit on SIGQUIT and SIGTERM
-  -t             License terms
+  -b <ip|iface>[:<port>]        network interface or interface and UPnP port to use
+  -a <port>[:<count>]   set inbound port and range for RTP and HTTP
+  -c <mp3[:<rate>]|flac[:0..9]|wav|pcm> audio format send to player
+  -g <-3|-1|0>          HTTP content-length mode (-3:chunked, -1:none, 0:fixed)
+  -u <version>  set the maximum UPnP version for search (default 1)
+  -x <config file>      read config from file (default is ./config.xml)
+  -i <config file>      discover players, save <config file> and exit
+  -I                    auto save config at every network scan
+  -l <[rtp][:http][:f]> RTP and HTTP latency (ms), ':f' forces silence fill
+  -r                    let timing reference drift (no click)
+  -f <logfile>          write debug to logfile
+  -p <pid file>         write PID in file
+  -N <format>           transform device name using C format (%s=name)
+  -m <n1,n2...>         exclude devices whose model include tokens
+  -n <m1,m2,...>        exclude devices whose name includes tokens
+  -o <m1,m2,...>        include only listed models; overrides -m and -n (use <NULL> if player don't return a model)
+  -d <log>=<level>      Set logging level, logs: all|raop|main|util|upnp, level: error|warn|info|debug|sdebug
+  -z                    Daemonize
+  -Z                    NOT interactive
+  -k                    Immediate exit on SIGQUIT and SIGTERM
+  -t                    License terms
+  --noflush             ignore flush command (wait for teardown to stop)
 ```
 
 # Troubleshooting
 
-1. does the executable run successfully outside the container?
-2. what output can be seen 
+1. When and what version was the last successfully running AirConnect and container?
+2. Were there any changes that might have affected the environment? 
+3. Does the AirConnect executable run successfully on the host computer?
+4. Is there any output that can be seen as to why there was an issue?
 
 Troubleshooting can be done outside of the container or inside the container, use the following examples to help dig into diagnosis.
 
@@ -118,7 +131,7 @@ Once inside the container, you can use standard config options to run the app as
 
 `./aircast-x86-64 -d all=debug` - will run the app and output a debug based log in an interactive mode
 
-If you perform any testing inside the container, it is suggested to completely restart the container after testing to be sure there are no incompatibilities.
+If you perform any testing inside the container, it is suggested to completely restart the container after testing to be sure there are no incompatibilities. If there is a mounted volume, please ensure that it is doublechecked for correctness.
 
 # Appreciation
 If you like what I've created, please consider contributing:
