@@ -1,7 +1,9 @@
 #!/usr/bin/with-contenv bash
+
 echo "Starting aircast run"
+
 if [ "${AIRCAST_VAR}" == "kill" ]; then
-    echo "Exiting aircast run"
+    echo "Exiting aircast run - due to kill"
     exit 0
 fi
 
