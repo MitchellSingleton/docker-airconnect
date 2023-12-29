@@ -115,11 +115,11 @@ if [ "$AIRUPNP_VAR" != "kill" ]; then
     && chmod +x /bin/airupnp-$ARCH_VAR
     echo "$(ls -la /bin/airupnp-$ARCH_VAR)"
     echo "setting airupnp service to up"
-    s6-svc -u /etc/s6-overlay/s6-rc.d/airupnp
+    s6-svc -u /var/run/s6/services/airupnp  
 else
     echo "Skipping copy of ${var_path}/${var_version}/airupnp-${ARCH_VAR}"
-    #echo "setting airupnp service to down"
-    #s6-svc -d /etc/s6-overlay/s6-rc.d/airupnp
+    echo "setting airupnp service to down"
+    s6-svc -d /var/run/s6/services/airupnp
 fi
 
 # copy specified binaries into place unless skipped by kill variable
@@ -129,11 +129,11 @@ if [ "$AIRCAST_VAR" != "kill" ]; then
     && chmod +x /bin/aircast-$ARCH_VAR
     echo "$(ls -la /bin/aircast-$ARCH_VAR)"
     echo "setting aircast service to up"
-    s6-svc -u /etc/s6-overlay/s6-rc.d/aircast
+    s6-svc -u /var/run/s6/services/aircast
 else
     echo "Skipping copy of ${var_path}/${var_version}/aircast-${ARCH_VAR}"
-    #echo "setting aircast service to down"
-    #s6-svc -d /etc/s6-overlay/s6-rc.d/aircast
+    echo "setting aircast service to down"
+    s6-svc -d /var/run/s6/services/aircast
 fi
 
 # copy specified binaries into place unless skipped by kill variable
