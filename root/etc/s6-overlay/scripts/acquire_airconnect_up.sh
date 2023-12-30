@@ -144,7 +144,7 @@ fi
 echo " executable usage:"
 if [ -f /bin/airupnp-${ARCH_VAR} ]; then
 /bin/airupnp-$ARCH_VAR -h
-elseif [ -f /bin/aircast-$ARCH_VAR ]; then
+elif [ -f /bin/aircast-$ARCH_VAR ]; then
 /bin/aircast-$ARCH_VAR -h
 fi
 
