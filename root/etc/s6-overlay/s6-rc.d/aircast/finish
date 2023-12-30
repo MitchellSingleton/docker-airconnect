@@ -1,6 +1,6 @@
 #!/usr/bin/with-contenv bash
 
-echo "Starting aircast finish"
+echo "=== Starting aircast finish ==="
 
 if [ "$ARCH_VAR" == "amd64" ]; then
   ARCH_VAR=linux-x86_64
@@ -10,13 +10,14 @@ elif [ "$ARCH_VAR" == "arm" ]; then
   ARCH_VAR=linux-arm
 fi
 
-echo "ARCH_VAR=${ARCH_VAR}"
+echo " ARCH_VAR=${ARCH_VAR}"
 ARCH_VAR="${ARCH_VAR}-static"
 
-echo "/bin/aircast-${ARCH_VAR}"
+echo " /bin/aircast-${ARCH_VAR}"
 if [ ! -f /bin/aircast-${ARCH_VAR} ]; then
-    echo "/bin/aircast-${ARCH_VAR} executable not found - exit 125 to prevent restart"
+    echo " /bin/aircast-${ARCH_VAR} executable not found - exit 125 to prevent restart"
+    echo "=== Exiting aircast finish - 125 ===
     exit 125
 fi
 
-echo "Exiting aircast finis"
+echo "=== Exiting aircast finish ==="
