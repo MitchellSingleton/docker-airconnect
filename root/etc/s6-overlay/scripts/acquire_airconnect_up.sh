@@ -71,7 +71,7 @@ if [ ! -f ${var_path}/${var_filename} ]; then
     cd /
     #future add check for download success
 else
-    echo "file exists"
+    echo "  file exists"
 fi
 
 #derive version from filename
@@ -128,7 +128,7 @@ if [ "$AIRUPNP_VAR" != "kill" ]; then
     && chmod +x /bin/airupnp-$ARCH_VAR
 else
     echo " AIRUPNP_VAR variable set to \"kill\", not enabling airupnp service and removing any previous airupnp executables from /bin"
-    rm /bin/airupnp-*
+    rm /bin/airupnp-* 2> /dev/null
 fi
 
 # copy specified binaries into place unless skipped by kill variable
@@ -138,7 +138,7 @@ if [ "$AIRCAST_VAR" != "kill" ]; then
     && chmod +x /bin/aircast-$ARCH_VAR
 else
     echo " AIRCAST_VAR variable set to \"kill\", not enabling aircast service and removing any previous aircast executables from /bin"
-    rm /bin/aircast-*
+    rm /bin/aircast-* 2> /dev/null
 fi
 
 echo " executable usage:"
