@@ -47,7 +47,7 @@ This image has been built using Docker's buildx with multi-architecture support 
 
 # Running
 
-This can be run using a docker compose file or a standard docker run command.
+This can be run using a docker compose file or a docker run command.
 
 Sample docker compose file (includes environment variable so the aircast executable is never started and custom parameters for the airupnp executable):
 
@@ -75,7 +75,10 @@ networks:
       external: true`
 ```
 
-Bare minimum Docker run config (will run both aircast and airupnp executables):
+example docker run command:
+`sudo docker run --net=host --pull always -v /mnt/docker_airconnect_data/:/config/ -e PATH_VAR=/config -e AIRCAST_VAR=kill -e MAXTOKEEP_VAR=10 --rm mitchellsingleton/docker-airconnect`
+
+Bare minimum Docker run command (will run both aircast and airupnp executables as services):
 
 `docker run -d --net=host mitchellsingleton/docker-airconnect`
 
