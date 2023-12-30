@@ -1,9 +1,9 @@
 #!/usr/bin/with-contenv bash
 
-echo "Starting airupnp run"
+echo "=== Starting airupnp run ==="
 
 if [ "${AIRUPNP_VAR}" == "kill" ]; then
-    echo "Exiting airupnp run - due to kill"
+    echo "=== Exiting airupnp run - due to AIRUPNP set to \"kill\" ==="
     exit 0
 fi
 
@@ -15,21 +15,19 @@ elif [ "$ARCH_VAR" == "arm" ]; then
   ARCH_VAR=linux-arm
 fi
 
-echo "ARCH_VAR=${ARCH_VAR}"
+echo " ARCH_VAR=${ARCH_VAR}"
 ARCH_VAR="${ARCH_VAR}-static"
-echo "ARCH_VAR=${ARCH_VAR}"
+echo " ARCH_VAR=${ARCH_VAR}"
 
 if [ -f /bin/airupnp-"${ARCH_VAR}" ]; then    
-    echo "executable /bin/airupnp-"${ARCH_VAR}" exists"
+    echo " executable /bin/airupnp-"${ARCH_VAR}" exists"
     if [ -z "${AIRUPNP_VAR}" ]; then
-        echo "AIRUPNP_VAR empty, setting it to defaults"
+        echo " AIRUPNP_VAR empty, setting it to defaults"
         AIRUPNP_VAR="-l 1000:2000"
         echo "AIRUPNP_VAR=${AIRUPNP_VAR}"
     fi
-    echo "/bin/airupnp-${ARCH_VAR} -h"
-    /bin/airupnp-${ARCH_VAR} -h
-    echo "/bin/airupnp-${ARCH_VAR} ${AIRUPNP_VAR}"
+    echo " /bin/airupnp-${ARCH_VAR} ${AIRUPNP_VAR}"
     /bin/airupnp-${ARCH_VAR} ${AIRUPNP_VAR}
 fi
 
-echo "Exiting airupnp run"
+echo "=== Exiting airupnp run ==="
