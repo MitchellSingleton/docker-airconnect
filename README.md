@@ -14,10 +14,15 @@ changes:
 
 testing:
 passed on RaspberryPi 3b+ running the linux-aarch64-static version of AirConnect 1.6.2 (killed aircast) using the docker command line to run on a standalone docker node.
+
 passed on RaspberryPi 4 running the linux-aarch64-static version of AirConnect 1.6.2 (killed aircast) using portainer to create a stack on a docker swarm.
+
 passed when using AIRCAST_VAR to kill the service
+
 passed when using AIRUPNP_VAR to kill the service
+
 passed when using both AIRCAST_VAR and AIRUPNP_VAR to kill their respective services
+
 passed when using VERSION_VAR to specify version
 * not set (defaults to latest - 1.6.2)
 * 1.5.4
