@@ -1,6 +1,6 @@
 #!/usr/bin/with-contenv bash
 
-echo "Starting airupnp finish"
+echo "=== Starting airupnp finish ==="
 
 if [ "$ARCH_VAR" == "amd64" ]; then
   ARCH_VAR=linux-x86_64
@@ -10,14 +10,14 @@ elif [ "$ARCH_VAR" == "arm" ]; then
   ARCH_VAR=linux-arm
 fi
 
-echo "ARCH_VAR=${ARCH_VAR}"
+echo " ARCH_VAR=${ARCH_VAR}"
 ARCH_VAR="${ARCH_VAR}-static"
 
-echo "/bin/airupnp-${ARCH_VAR}"
+echo " /bin/airupnp-${ARCH_VAR}"
 if [ ! -f /bin/airupnp-${ARCH_VAR} ]; then
-    echo "/bin/airupnp-${ARCH_VAR} executable not found - exit 125 to prevent restart"
-    echo "Exiting airupnp finish - 125"
+    echo " /bin/airupnp-${ARCH_VAR} executable not found - exit 125 to prevent restart"
+    echo "=== Exiting airupnp finish - 125 ==="
     exit 125
 fi
 
-echo "Exiting airupnp finish"
+echo "=== Exiting airupnp finish ==="
