@@ -16,7 +16,7 @@ ARCH_VAR="${ARCH_VAR}-static"
 echo " /bin/aircast-${ARCH_VAR}"
 if [ ! -f /bin/aircast-${ARCH_VAR} ]; then
     echo " /bin/aircast-${ARCH_VAR} executable not found - exit 125 to prevent restart"
-    echo "=== Exiting aircast finish - 125 ===
+    echo "=== Exiting aircast finish - 125 ==="
     exit 125
 fi
 
