@@ -3,7 +3,7 @@
 echo "Starting aircast run"
 
 if [ "${AIRCAST_VAR}" == "kill" ]; then
-    echo "Exiting aircast run - due to kill"
+    echo "=== Exiting aircast run - due to AIRCAST variable set to \"kill\" ==="
     exit 0
 fi
 
@@ -15,18 +15,16 @@ elif [ "$ARCH_VAR" == "arm" ]; then
   ARCH_VAR=linux-arm
 fi
 
-echo "ARCH_VAR=${ARCH_VAR}"
+echo " ARCH_VAR=${ARCH_VAR}"
 ARCH_VAR="${ARCH_VAR}-static"
 
 if [ -f /bin/aircast-${ARCH_VAR} ]; then
-    echo "executable /bin/aircast-"${ARCH_VAR}" exists"
+    echo " executable /bin/aircast-"${ARCH_VAR}" exists"
     if [ -z "${AIRCAST_VAR}" ]; then
-       echo "/bin/aircast-${ARCH_VAR} -h"
-       /bin/aircast-${ARCH_VAR} -h
-       /bin/aircast-${ARCH_VAR} -Z
+       /bin/aircast-${ARCH_VAR}
     else
        /bin/aircast-${ARCH_VAR} ${AIRCAST_VAR}
     fi
 fi
 
-echo "Exiting aircast run"
+echo "=== Exiting aircast run ==="
