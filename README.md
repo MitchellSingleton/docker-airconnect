@@ -24,6 +24,7 @@ passed when using VERSION_VAR to specify version
 * 1.6.0
 * 1.6.1
 * 1.6.2
+
 passed when using MAXTOKEEP_VAR to specify
 * not set (defaults to skip cleanup)
 * 3
