@@ -1,7 +1,5 @@
 #!/usr/bin/with-contenv bash
-
-echo "Start of acquire_airconnect_up.sh"
-
+echo "=== Starting acquire_airconnect_up.sh ==="
 # This one-shot script is a dependacy and will run first.
 # It will check if the requested version has been downloaded and if not download it
 # It will check if the downloaded file has been unzipped and if not unzip
@@ -15,21 +13,21 @@ elif [ "$ARCH_VAR" == "arm" ]; then
    ARCH_VAR=linux-arm
 fi
 
-echo "Checking for valid arch options"
+echo " Checking for valid arch options"
 case $ARCH_VAR in
   linux-x86_64)
-    echo "Proceeding with linux-x86_64 arch"
+    echo "  Proceeding with linux-x86_64 arch"
     ;;
   linux-aarch64)
-    echo "Proceeding with linux-aarch64 arch"
+    echo "  Proceeding with linux-aarch64 arch"
     ;;
   linux-arm)
-    echo "Proceeding with linux-arm arch"
+    echo "  Proceeding with linux-arm arch"
     ;;
   *)
-    echo "Unrecognized or invalid arch selection, CANCELING INSTALL"
-    echo "========== FAILURE DETECTED ========="
-    echo "YOUR CONTAINER WILL NOT WORK, PLEASE ADDRESS OR OPEN AN ISSUE"
+    echo "  Unrecognized or invalid arch selection, CANCELING INSTALL"
+    echo "  ========== FAILURE DETECTED ========="
+    echo "  YOUR CONTAINER WILL NOT WORK, PLEASE ADDRESS OR OPEN AN ISSUE"
     exit 1
     ;;
 esac
@@ -62,9 +60,9 @@ fi
 var_filename=${var_url##*/}
 
 #future check if file already exists so that downloading can be skipped - only works if download location is persistant
-echo "testing if ${var_path}/${var_filename} exists"
+echo " testing if ${var_path}/${var_filename} exists"
 if [ ! -f ${var_path}/${var_filename} ]; then
-    echo "${var_path}/${var_filename} not found, downloading"
+    echo "  ${var_path}/${var_filename} not found, downloading"
     mkdir -p ${var_path}
     # to allow saving download to path, change directory first.
     #future investigate curl version and --output-dir flag
@@ -85,12 +83,13 @@ var_version=${var_filename%.*}
 # test if desired binaries exist
 # if not, extract and copy files to path (to persist) and to the container
 # cleanup the extracted files
-echo "testing if either ${var_path}/${var_version}/airupnp-${ARCH_VAR} or ${var_path}/${var_version}/aircast-${ARCH_VAR} does not exists"
+echo " testing if either ${var_path}/${var_version}/airupnp-${ARCH_VAR} or ${var_path}/${var_version}/aircast-${ARCH_VAR} does not exists"
 if [ ! -f ${var_path}/${var_version}/airupnp-${ARCH_VAR} -o ! -f ${var_path}/${var_version}/aircast-${ARCH_VAR} ]; then
+    echo "  extracting required executables: airupnp-${ARCH_VAR} aircast-${ARCH_VAR}
     unzip -o ${var_path}/${var_filename} airupnp-${ARCH_VAR} aircast-${ARCH_VAR} -d ${var_path}/${var_version}/
 fi
 
-echo "$(ls -la ${var_path}/${var_version}/)"
+ls -la ${var_path}/${var_version}/
 
 if [ -z "${MAXTOKEEP_VAR}" ]; then
    var_max=3
@@ -100,51 +99,53 @@ fi
 cd ${var_path}
 n=0
 # only keep X versions of file
+echo " check for any files and directories to clean up"
 ls -1t *.zip |
 while read file; do
     n=$((n+1))
-    if [[ $n -gt $var_max ]]; then
-        rm -f "$file"
+    if [ $n -gt $var_max ]; then
+        echo "  removing ${file}"
+        rm "${file}"
     fi
 done
 n=0
 # only keep X versions of directories
-#ls -1t */ |
-#while read directory; do
-#    n=$((n+1))
-#    if [[ $n -gt $var_max ]]; then
-#        rm -f "$file"
-#    fi
-#done
+ls -1dt */ |
+while read directory; do
+    n=$((n+1))
+    if [ $n -gt $var_max ]; then
+        echo "  removing ${directory}"
+        rm -r "$directory"
+    fi
+done
+n=0
 cd /
-
-
-#if [ ${var_version_count} -gt ${KEEP_VAR} ]; then
-#    # clean up extracted files
-#    echo "Removing ${var_path}/${var_filename%.*}/"
-#    rm -r ${var_path}/${var_filename%.*}/
-#fi
 
 # copy specified binaries into place unless skipped by kill variable
 if [ "$AIRUPNP_VAR" != "kill" ]; then
-    echo "copying ${var_path}/${var_version}/airupnp-${ARCH_VAR} to /bin/airupnp-${ARCH_VAR}"
+    echo " copying ${var_path}/${var_version}/airupnp-${ARCH_VAR} to /bin/airupnp-${ARCH_VAR}"
     cp ${var_path}/${var_version}/airupnp-${ARCH_VAR} /bin/airupnp-${ARCH_VAR} \
     && chmod +x /bin/airupnp-$ARCH_VAR
-    echo "$(ls -la /bin/airupnp-$ARCH_VAR)"
 else
-    echo "Per variable set to \"kill\", not enabling airupnp service and removing any previous airupnp executables from /bin"
+    echo " AIRUPNP_VAR variable set to \"kill\", not enabling airupnp service and removing any previous airupnp executables from /bin"
     rm /bin/airupnp-*
 fi
 
 # copy specified binaries into place unless skipped by kill variable
 if [ "$AIRCAST_VAR" != "kill" ]; then
-    echo "copying ${var_path}/${var_version}/aircast-${ARCH_VAR} to /bin/aircast-${ARCH_VAR}"
+    echo " copying ${var_path}/${var_version}/aircast-${ARCH_VAR} to /bin/aircast-${ARCH_VAR}"
     cp ${var_path}/${var_version}/aircast-${ARCH_VAR} /bin/aircast-${ARCH_VAR} \
     && chmod +x /bin/aircast-$ARCH_VAR
-    echo "$(ls -la /bin/aircast-$ARCH_VAR)"
 else
-    echo "Per variable set to \"kill\", not enabling aircast service and removing any previous aircast executables from /bin"
+    echo " AIRCAST_VAR variable set to \"kill\", not enabling aircast service and removing any previous aircast executables from /bin"
     rm /bin/aircast-*
 fi
-    
-echo "end of acquire_airconnect_up.sh"
+
+echo " executable usage:"
+if [ -f /bin/airupnp-${ARCH_VAR} ]; then
+/bin/airupnp-$ARCH_VAR -h
+elseif [ -f /bin/aircast-$ARCH_VAR ]; then
+/bin/aircast-$ARCH_VAR -h
+fi
+
+echo "=== exiting acquire_airconnect_up.sh ==="
