@@ -24,7 +24,7 @@ if [ -f /bin/airupnp-"${ARCH_VAR}" ]; then
     if [ -z "${AIRUPNP_VAR}" ]; then
         echo " AIRUPNP_VAR empty, setting it to defaults"
         AIRUPNP_VAR="-l 1000:2000"
-        echo "AIRUPNP_VAR=${AIRUPNP_VAR}"
+        echo " AIRUPNP_VAR=${AIRUPNP_VAR}"
     fi
     echo " /bin/airupnp-${ARCH_VAR} ${AIRUPNP_VAR}"
     /bin/airupnp-${ARCH_VAR} ${AIRUPNP_VAR}
