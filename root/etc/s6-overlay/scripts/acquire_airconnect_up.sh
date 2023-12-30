@@ -90,36 +90,36 @@ if [ ! -f ${var_path}/${var_version}/airupnp-${ARCH_VAR} -o ! -f ${var_path}/${v
 fi
 
 ls -la ${var_path}/${var_version}/
-
-if [ -z "${MAXTOKEEP_VAR}" ]; then
-   var_max=3
+if [ ${MAXTOKEEP_VAR} -eq 0 ]; then
+   echo " MAXTOKEEP_VAR is set to zero or not set, skipping cleanup"
 else
+   echo " MAXTOKEEP_VAR is set to ${MAXTOKEEP_VAR}, will keep the most recent ${MAXTOKEEP_VAR} .zip files and directories"
    var_max=${MAXTOKEEP_VAR}
+   cd ${var_path}
+   n=0
+   # only keep X versions of file
+   echo " checking for files and directories to clean up"
+   ls -1t *.zip |
+   while read file; do
+      n=$((n+1))
+      if [ $n -gt $var_max ]; then
+          echo "  removing ${file}"
+          rm "${file}"
+      fi
+   done
+   n=0
+   # only keep X versions of directories
+   ls -1dt */ |
+   while read directory; do
+      n=$((n+1))
+      if [ $n -gt $var_max ]; then
+          echo "  removing ${directory}"
+          rm -r "$directory"
+      fi
+   done
+   n=0
+   cd /
 fi
-cd ${var_path}
-n=0
-# only keep X versions of file
-echo " check for any files and directories to clean up"
-ls -1t *.zip |
-while read file; do
-    n=$((n+1))
-    if [ $n -gt $var_max ]; then
-        echo "  removing ${file}"
-        rm "${file}"
-    fi
-done
-n=0
-# only keep X versions of directories
-ls -1dt */ |
-while read directory; do
-    n=$((n+1))
-    if [ $n -gt $var_max ]; then
-        echo "  removing ${directory}"
-        rm -r "$directory"
-    fi
-done
-n=0
-cd /
 
 # copy specified binaries into place unless skipped by kill variable
 if [ "$AIRUPNP_VAR" != "kill" ]; then
