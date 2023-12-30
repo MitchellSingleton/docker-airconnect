@@ -1,6 +1,6 @@
 # Changelog
 
-changes:
+## changes:
 * changed from supervisor to s6
 * changed image from ls.io ubuntu to ls.io alpine
 * changed the script order to download airconnect on container start (instead of requiring a container build)
@@ -12,7 +12,7 @@ changes:
 * changed the extraction to only pull out the executables needed (changed to statically built ones)
 * added check to only extract the binary files if they don't already exist
 
-testing:
+## testing:
 passed on RaspberryPi 3b+ running the linux-aarch64-static version of AirConnect 1.6.2 (killed aircast) using the docker command line to run on a standalone docker node.
 
 passed on RaspberryPi 4 running the linux-aarch64-static version of AirConnect 1.6.2 (killed aircast) using portainer to create a stack on a docker swarm.
@@ -35,7 +35,7 @@ passed when using MAXTOKEEP_VAR to specify
 * 3
 * 0 - skips clean up
 
-future:
+## future:
 
 
 # docker-airconnect
