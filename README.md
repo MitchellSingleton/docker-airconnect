@@ -15,10 +15,22 @@ changes:
 testing:
 passed on RaspberryPi 3b+ running the linux-aarch64-static version of AirConnect 1.6.2 (killed aircast) using the docker command line to run on a standalone docker node.
 passed on RaspberryPi 4 running the linux-aarch64-static version of AirConnect 1.6.2 (killed aircast) using portainer to create a stack on a docker swarm.
+passed when using AIRCAST_VAR to kill the service
+passed when using AIRUPNP_VAR to kill the service
+passed when using both AIRCAST_VAR and AIRUPNP_VAR to kill their respective services
+passed when using VERSION_VAR to specify version
+* not set (defaults to latest - 1.6.2)
+* 1.5.4
+* 1.6.0
+* 1.6.1
+* 1.6.2
+passed when using MAXTOKEEP_VAR to specify
+* not set (defaults to skip cleanup)
+* 3
+* 0 - skips clean up
 
 future:
-only keep x number of directories of previous versions
-better testing
+
 
 # docker-airconnect
 Minimal muti-architecture (AMD64, ARM64, and ARM) docker container with AirConnect for turning Chromecast and UPNP devices into Apple Airplay targets. the image is built from 
