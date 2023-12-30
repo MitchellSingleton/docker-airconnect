@@ -45,9 +45,9 @@ What differentiates this image over the others out there, is that this container
 
 This image has been built using Docker's buildx with multi-architecture support for AMD64, ARM64, and ARM devices.
 
-# Running
+# How to use this image
 
-This can be run using a docker compose file or a docker run command.
+This image can be used by running a docker compose file or a docker run command.
 
 Sample docker compose file (includes environment variable so the aircast executable is never started and custom parameters for the airupnp executable):
 
@@ -75,7 +75,7 @@ networks:
       external: true`
 ```
 
-example docker run command:
+Sample docker run command:
 `sudo docker run --net=host --pull always -v /mnt/docker_airconnect_data/:/config/ -e PATH_VAR=/config -e AIRCAST_VAR=kill -e MAXTOKEEP_VAR=10 --rm mitchellsingleton/docker-airconnect`
 
 Bare minimum Docker run command (will run both aircast and airupnp executables as services):
@@ -86,7 +86,7 @@ If you would like to run a specific version of AirConnect you can now specify th
 
 `docker run -d --net=host -e VERSION_VAR=1.6.1 mitchellsingleton/docker-airconnect`
 
-Environment variables that can be used when you run the container:
+Environment variables that can be set when the container is ran:
 * `AIRCAST_VAR` - This variable allows passing command line parameters to the aircast executable or using the special case of 'kill' to disable the aircast service.
   Note: do not add -z or -Z to deamonize or the s6 overlay will think the service died and will start it again.
 * `AIRUPNP_VAR` - This variable allows passing command line parameters to the airupnp executable or using the special case of 'kill' to disable the airupnp service.
