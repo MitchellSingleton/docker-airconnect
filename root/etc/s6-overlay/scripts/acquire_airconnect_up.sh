@@ -83,9 +83,9 @@ var_version=${var_filename%.*}
 # test if desired binaries exist
 # if not, extract and copy files to path (to persist) and to the container
 # cleanup the extracted files
-echo " testing if either ${var_path}/${var_version}/airupnp-${ARCH_VAR} or ${var_path}/${var_version}/aircast-${ARCH_VAR} does not exists"
+echo " testing if either ${var_path}/${var_version}/airupnp-${ARCH_VAR} or ${var_path}/${var_version}/aircast-${ARCH_VAR} does not exist"
 if [ ! -f ${var_path}/${var_version}/airupnp-${ARCH_VAR} -o ! -f ${var_path}/${var_version}/aircast-${ARCH_VAR} ]; then
-    echo "  extracting required executables: airupnp-${ARCH_VAR} aircast-${ARCH_VAR}
+    echo "  extracting required executables: airupnp-${ARCH_VAR} aircast-${ARCH_VAR}"
     unzip -o ${var_path}/${var_filename} airupnp-${ARCH_VAR} aircast-${ARCH_VAR} -d ${var_path}/${var_version}/
 fi
 
